@@ -1,0 +1,376 @@
+[
+  {
+    "doc_id": "governance_public_affairs::ministry_public_administration::civil_servant_info::Civil service guidelines?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_public_administration",
+    "subservice_id": "civil_servant_info",
+    "title": "Civil service guidelines?",
+    "content": "Governance & Public Affairs | Ministry of Public Administration | Civil Servant Information | Civil service guidelines? | Check Public Admin portal for latest guidelines and circulars.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/civil-service-guidelines.pdf"
+      ],
+      "location": null,
+      "instructions": "Refer to the circular section for updates."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_public_administration::civil_servant_info::How to apply for a transfer?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_public_administration",
+    "subservice_id": "civil_servant_info",
+    "title": "How to apply for a transfer?",
+    "content": "Governance & Public Affairs | Ministry of Public Administration | Civil Servant Information | How to apply for a transfer? | Submit a transfer application form with supporting documents.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/transfer-application.pdf"
+      ],
+      "location": null,
+      "instructions": "Attach service record and approval from current department."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_justice::court_services::How do I check my court case status?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_justice",
+    "subservice_id": "court_services",
+    "title": "How do I check my court case status?",
+    "content": "Governance & Public Affairs | Ministry of Justice | Court Services | How do I check my court case status? | You can check your case status online at www.justiceministry.gov.lk/cases or by visiting the relevant court registry.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/case-status-request.pdf"
+      ],
+      "location": null,
+      "instructions": "Have your case reference number ready when checking status."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_justice::court_services::How to request legal aid?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_justice",
+    "subservice_id": "court_services",
+    "title": "How to request legal aid?",
+    "content": "Governance & Public Affairs | Ministry of Justice | Court Services | How to request legal aid? | Submit a legal aid application at the Legal Aid Commission office or online.",
+    "metadata": {
+      "downloads": [
+        "https://justice.gov.lk/forms/legal-aid-application.pdf"
+      ],
+      "location": null,
+      "instructions": "Attach proof of income and ID copy."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_foreign::consular_services::Consular assistance?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_foreign",
+    "subservice_id": "consular_services",
+    "title": "Consular assistance?",
+    "content": "Governance & Public Affairs | Ministry of Foreign Affairs | Consular Services | Consular assistance? | Contact your nearest Sri Lankan embassy for help with passports, emergencies, and legal matters.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/consular-service-application.pdf"
+      ],
+      "location": null,
+      "instructions": "Visit the embassy website for appointment booking."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_foreign::consular_services::How to renew a passport abroad?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_foreign",
+    "subservice_id": "consular_services",
+    "title": "How to renew a passport abroad?",
+    "content": "Governance & Public Affairs | Ministry of Foreign Affairs | Consular Services | How to renew a passport abroad? | Submit renewal form and old passport at the embassy.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/passport-renewal.pdf"
+      ],
+      "location": null,
+      "instructions": "Attach passport photos and pay renewal fee."
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_imm::visa_services::How to apply for visa?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_imm",
+    "subservice_id": "visa_services",
+    "title": "How to apply for visa?",
+    "content": "Governance & Public Affairs | Ministry of Immigration | Visa Services | How to apply for visa? | Visit Immigration Dept.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "governance_public_affairs::ministry_defence::military_recruitment::How to join military?",
+    "super_category_id": "governance_public_affairs",
+    "ministry_id": "ministry_defence",
+    "subservice_id": "military_recruitment",
+    "title": "How to join military?",
+    "content": "Governance & Public Affairs | Ministry of Defence | Military Recruitment | How to join military? | Check defence ministry website.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_finance::tax_info::How to file taxes?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_finance",
+    "subservice_id": "tax_info",
+    "title": "How to file taxes?",
+    "content": "Economic Development & Infrastructure | Ministry of Finance | Tax Information | How to file taxes? | File taxes online at www.ird.gov.lk or visit the IRD office.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/tax-return-individual.pdf",
+        "/static/forms/tax-return-business.pdf"
+      ],
+      "location": null,
+      "instructions": "Have your TIN and income documents ready."
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_finance::tax_info::How to get a TIN?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_finance",
+    "subservice_id": "tax_info",
+    "title": "How to get a TIN?",
+    "content": "Economic Development & Infrastructure | Ministry of Finance | Tax Information | How to get a TIN? | Apply at IRD with your National ID and proof of income.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/tin-application.pdf"
+      ],
+      "location": null,
+      "instructions": "Fill out the TIN application form and submit at IRD."
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_finance::tax_info::How to claim a tax refund?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_finance",
+    "subservice_id": "tax_info",
+    "title": "How to claim a tax refund?",
+    "content": "Economic Development & Infrastructure | Ministry of Finance | Tax Information | How to claim a tax refund? | Submit refund request form with supporting documents at IRD.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/tax-refund-request.pdf"
+      ],
+      "location": null,
+      "instructions": "Attach proof of tax payment and bank details."
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_industry_trade::business_registration::Register a new business?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_industry_trade",
+    "subservice_id": "business_registration",
+    "title": "Register a new business?",
+    "content": "Economic Development & Infrastructure | Ministry of Industry & Trade | Business Registration | Register a new business? | Contact Registrar of Companies.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_power_energy::electricity_bills::Pay electricity bill?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_power_energy",
+    "subservice_id": "electricity_bills",
+    "title": "Pay electricity bill?",
+    "content": "Economic Development & Infrastructure | Ministry of Power & Energy | Electricity Bills | Pay electricity bill? | Online or post office.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_transport::driving_license::How to get a driving license?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_transport",
+    "subservice_id": "driving_license",
+    "title": "How to get a driving license?",
+    "content": "Economic Development & Infrastructure | Ministry of Transport | Driving License Services | How to get a driving license? | Visit DMT.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "economic_development_infra::ministry_it::None::How to apply for an IT certificate?",
+    "super_category_id": "economic_development_infra",
+    "ministry_id": "ministry_it",
+    "subservice_id": null,
+    "title": "How to apply for an IT certificate?",
+    "content": "Economic Development & Infrastructure | Ministry of IT & Digital Affairs | IT Certificates | How to apply for an IT certificate? | Fill online form and upload NIC.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/it_cert_form.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Ministry+of+IT",
+      "instructions": "Visit the digital portal, register and submit application."
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_health::public_hospitals::Nearest hospital?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_health",
+    "subservice_id": "public_hospitals",
+    "title": "Nearest hospital?",
+    "content": "Social & Human Development | Ministry of Health | Public Hospitals | Nearest hospital? | Check health ministry portal.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_education::schools::How to register a school?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_education",
+    "subservice_id": "schools",
+    "title": "How to register a school?",
+    "content": "Social & Human Development | Ministry of Education | Schools | How to register a school? | Complete registration form and submit documents.",
+    "metadata": {
+      "downloads": [
+        "/static/forms/school_reg.pdf"
+      ],
+      "location": "https://maps.google.com/?q=Ministry+of+Education",
+      "instructions": "Follow the guidelines on the education portal."
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_education::exams::How to apply for national exam?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_education",
+    "subservice_id": "exams",
+    "title": "How to apply for national exam?",
+    "content": "Social & Human Development | Ministry of Education | Exams & Results | How to apply for national exam? | Register via examination portal.",
+    "metadata": {
+      "downloads": [],
+      "location": "",
+      "instructions": "Check exam schedule and fee."
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_labour::employment_services::Find job openings?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_labour",
+    "subservice_id": "employment_services",
+    "title": "Find job openings?",
+    "content": "Social & Human Development | Ministry of Labour | Employment Services | Find job openings? | Visit employment exchange.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_youth::youth_programs::Youth development programs?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_youth",
+    "subservice_id": "youth_programs",
+    "title": "Youth development programs?",
+    "content": "Social & Human Development | Ministry of Youth Affairs | Youth Programs | Youth development programs? | Check youth services council.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_housing::housing_schemes::Apply for housing?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_housing",
+    "subservice_id": "housing_schemes",
+    "title": "Apply for housing?",
+    "content": "Social & Human Development | Ministry of Housing | Housing Schemes | Apply for housing? | Contact NHDA.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_agri::farmer_support::Subsidies for farmers?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_agri",
+    "subservice_id": "farmer_support",
+    "title": "Subsidies for farmers?",
+    "content": "Social & Human Development | Ministry of Agriculture | Farmer Support Services | Subsidies for farmers? | Contact Agrarian Services.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "social_human_development::ministry_water_supply::water_connections::Apply for new water connection?",
+    "super_category_id": "social_human_development",
+    "ministry_id": "ministry_water_supply",
+    "subservice_id": "water_connections",
+    "title": "Apply for new water connection?",
+    "content": "Social & Human Development | Ministry of Water Supply | Water Connections | Apply for new water connection? | Contact NWSDB.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "environment_culture_tourism::ministry_environment::waste_management::Waste disposal guidelines?",
+    "super_category_id": "environment_culture_tourism",
+    "ministry_id": "ministry_environment",
+    "subservice_id": "waste_management",
+    "title": "Waste disposal guidelines?",
+    "content": "Environment, Culture & Tourism | Ministry of Environment | Waste Management | Waste disposal guidelines? | Check CEA guidelines.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "environment_culture_tourism::ministry_culture::cultural_events::Upcoming cultural events?",
+    "super_category_id": "environment_culture_tourism",
+    "ministry_id": "ministry_culture",
+    "subservice_id": "cultural_events",
+    "title": "Upcoming cultural events?",
+    "content": "Environment, Culture & Tourism | Ministry of Culture | Cultural Events | Upcoming cultural events? | Visit cultural affairs department.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "environment_culture_tourism::ministry_tourism::tourist_info::Popular tourist spots?",
+    "super_category_id": "environment_culture_tourism",
+    "ministry_id": "ministry_tourism",
+    "subservice_id": "tourist_info",
+    "title": "Popular tourist spots?",
+    "content": "Environment, Culture & Tourism | Ministry of Tourism | Tourist Information | Popular tourist spots? | Check SL Tourism website.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  },
+  {
+    "doc_id": "other_government_services::ministry_general::general_inquiries::What services are offered?",
+    "super_category_id": "other_government_services",
+    "ministry_id": "ministry_general",
+    "subservice_id": "general_inquiries",
+    "title": "What services are offered?",
+    "content": "Other Government Services | General Government Services | General Inquiries | What services are offered? | Please check the service list on the portal.",
+    "metadata": {
+      "downloads": [],
+      "location": null,
+      "instructions": null
+    }
+  }
+]
