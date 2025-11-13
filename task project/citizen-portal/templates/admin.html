@@ -1,0 +1,313 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Citizen Portal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Specific admin styles to override or add to base style.css */
+        body { background: var(--background-light); color: var(--text-color-dark); }
+        .admin-container {
+            max-width: 1200px;
+            margin: var(--spacing-xl) auto;
+            padding: var(--spacing-lg);
+            background-color: var(--card-background);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: var(--spacing-md);
+        }
+
+        .admin-header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .admin-button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .admin-button-group button {
+            background-color: var(--secondary-color);
+            color: var(--text-color-light);
+            padding: var(--spacing-sm) var(--spacing-md);
+        }
+
+        .admin-button-group button.danger {
+            background-color: #f44336; /* Red for danger actions */
+        }
+
+        .admin-button-group button:hover {
+            background-color: var(--primary-color);
+        }
+
+        .admin-button-group button.danger:hover {
+            background-color: #d32f2f;
+        }
+
+        .login-box {
+            max-width: 450px;
+            margin: var(--spacing-xl) auto;
+            padding: var(--spacing-xl);
+            background-color: var(--card-background);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-medium);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-form label {
+            display: block;
+            text-align: left;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: #424242;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: calc(100% - var(--spacing-lg)); /* Full width minus padding */
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 1em;
+        }
+
+        .login-form button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: var(--text-color-light);
+            padding: var(--spacing-md);
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .login-form button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-card {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center chart vertically */
+        }
+
+        .dashboard-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .dashboard-section h2, .dashboard-section h3 {
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        #premiumList div {
+            background-color: #fffde7; /* Light yellow for premium suggestions */
+            border: 1px solid #ffe082;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.95em;
+        }
+        #premiumList b {
+            color: var(--primary-color);
+        }
+        #premiumList span {
+            color: var(--accent-color);
+        }
+
+        .engagements-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+        }
+
+        .engagements-table th,
+        .engagements-table td {
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        .engagements-table th {
+            background-color: var(--background-medium);
+            font-weight: 600;
+            color: #424242;
+        }
+
+        .engagements-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        .export-csv-button {
+            background-color: #4caf50; /* Green for CSV export */
+            color: var(--text-color-light);
+            margin-bottom: var(--spacing-md);
+            float: right;
+        }
+
+        .export-csv-button:hover {
+            background-color: #388e3c;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .admin-button-group {
+                margin-top: var(--spacing-md);
+                width: 100%;
+                justify-content: space-around;
+            }
+            .admin-button-group button {
+                flex-grow: 1;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-container {
+                margin: var(--spacing-lg) auto;
+                padding: var(--spacing-md);
+            }
+            .login-box {
+                margin: var(--spacing-lg) auto;
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <div class="admin-button-group">
+                <button id="manageCategoriesBtn" onclick="window.location='/admin/categories'">
+                    <i class="fas fa-list-alt"></i> Categories
+                </button>
+                <button id="manageOfficersBtn" onclick="window.location='/admin/officers'">
+                    <i class="fas fa-users"></i> Officers
+                </button>
+                <button id="manageAdsBtn" onclick="window.location='/admin/ads'">
+                    <i class="fas fa-bullhorn"></i> Ads
+                </button>
+                <button id="manageServicesBtn" onclick="window.location='/admin/manage'">
+                    <i class="fas fa-cogs"></i> Services
+                </button>
+                <button id="logoutBtn" class="danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <div id="login-box" class="login-box">
+            <h2>Admin Login</h2>
+            <form id="login-form" class="login-form">
+                <label for="username">Username</label>
+                <input name="username" type="text" id="username" value="admin" placeholder="Enter username"/>
+                <label for="password">Password</label>
+                <input name="password" type="password" id="password" value="admin123" placeholder="Enter password"/>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <div id="dashboard" style="display:none;">
+            <div class="dashboard-section">
+                <h2>Insights Overview</h2>
+                <div class="dashboard-grid">
+                    <div class="card chart-card"><canvas id="ageChart"></canvas></div>
+                    <div class="card chart-card"><canvas id="jobChart"></canvas></div>
+                    <div class="card chart-card"><canvas id="serviceChart"></canvas></div>
+                    <div class="card chart-card"><canvas id="questionChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h3>AI Search Index Management</h3>
+                <div class="card">
+                    <button id="rebuildIndexBtn" onclick="rebuildIndex()">
+                        <i class="fas fa-magic"></i> Rebuild AI Search Index
+                    </button>
+                    <p class="text-muted" style="margin-top: 10px;">Run this after adding/updating content to enable AI search.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h3>AI Index Jobs</h3>
+                <div id="indexJobsPanel" class="card">
+                    <div style="margin-bottom:8px;"><strong>Recent index jobs</strong></div>
+                    <table id="indexJobsTable" class="engagements-table">
+                        <thead><tr><th>Job ID</th><th>Status</th><th>Created</th><th>Started</th><th>Finished</th><th>Summary</th></tr></thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Job detail modal -->
+            <div id="indexJobModal" class="modal" style="display:none; position:fixed; left:0; top:0; right:0; bottom:0; background: rgba(0,0,0,0.4);">
+                <div style="background:#fff; max-width:900px; margin:60px auto; padding:18px; border-radius:6px;">
+                    <h4 id="indexJobModalTitle">Job Details</h4>
+                    <pre id="indexJobModalContent" style="white-space:pre-wrap; max-height:400px; overflow:auto; background:#f7f7f7; padding:8px;"></pre>
+                    <div style="text-align:right; margin-top:8px;"><button onclick="document.getElementById('indexJobModal').style.display='none'">Close</button></div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h3>Premium Suggestions</h3>
+                <div id="premiumList" class="card">
+                    <div>No suggestions</div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h3>Recent Engagements</h3>
+                <div class="card">
+                    <button id="exportCsv" class="export-csv-button">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <div style="clear:both;"></div> <!-- Clear float -->
+                    <table id="engTable" class="engagements-table">
+                        <thead>
+                            <tr><th>User ID</th><th>Age</th><th>Job</th><th>Desires</th><th>Question</th><th>Service</th><th>Ad</th><th>Source</th><th>Timestamp</th></tr>
+                        </thead>
+                        <tbody>
+                            <!-- Engagements will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/admin.js"></script>
+</body>
+</html>

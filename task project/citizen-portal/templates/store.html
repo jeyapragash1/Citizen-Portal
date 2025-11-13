@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Public Store - Citizen Services</title>
+    <link rel="stylesheet" href="/static/store.css">
+</head>
+<body>
+    <div class="store-container">
+        <header class="store-header">
+            <h1>Public Store</h1>
+            <div class="store-actions">
+                <input type="text" id="store-search" placeholder="Search products...">
+                <button onclick="toggleFilters()">Filters</button>
+                <button onclick="viewCart()">Cart (<span id="cart-count">0</span>)</button>
+            </div>
+        </header>
+
+        <div class="store-layout">
+            <!-- Filters Sidebar -->
+            <aside class="filters-sidebar" id="filters-sidebar">
+                <h3>Filters</h3>
+                 
+                <div class="filter-group">
+                    <h4>Categories</h4>
+                    <div id="category-filters"></div>
+                </div>
+                 
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <input type="range" id="price-range" min="0" max="500000" step="1000">
+                    <div class="price-display">
+                        <span>LKR </span><span id="min-price">0</span> -  
+                        <span>LKR </span><span id="max-price">500,000</span>
+                    </div>
+                </div>
+                 
+                <div class="filter-group">
+                    <h4>Delivery Options</h4>
+                    <label><input type="checkbox" name="delivery" value="delivery"> Home Delivery</label>
+                    <label><input type="checkbox" name="delivery" value="pickup"> Store Pickup</label>
+                    <label><input type="checkbox" name="delivery" value="online"> Online</label>
+                </div>
+                 
+                <button onclick="applyFilters()">Apply Filters</button>
+                <button onclick="clearFilters()">Clear All</button>
+            </aside>
+
+            <!-- Products Grid -->
+            <main class="products-grid">
+                <div class="products-header">
+                    <h2 id="products-title">Featured Products</h2>
+                    <div class="sort-options">
+                        <select id="sort-by" onchange="loadProducts()">
+                            <option value="featured">Featured</option>
+                            <option value="price_low">Price: Low to High</option>
+                            <option value="price_high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="newest">Newest First</option>
+                        </select>
+                    </div>
+                </div>
+                 
+                <div class="products-container" id="products-container">
+                    <!-- Products will be loaded here -->
+                </div>
+                 
+                <div class="loading" id="loading">Loading products...</div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h2>Shopping Cart</h2>
+            <div id="cart-items"></div>
+            <div class="cart-total">
+                <strong>Total: LKR <span id="cart-total">0</span></strong>
+            </div>
+            <button onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <script src="/static/store.js"></script>
+</body>
+</html>

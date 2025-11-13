@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Services - Admin</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Heroicons for a modern touch -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@heroicons/vue@1.0.4/dist/vue.css">
+    <style>
+        /* No specific inline styles needed here now, as style.css is comprehensive */
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <a href="/admin" class="back-to-admin">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="height:1.2em; width:1.2em; vertical-align:middle; margin-right:5px;">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.25-7.75a.75.75 0 00-1.5 0v3.5a.75.75 0 00.75.75h3.5a.75.75 0 000-1.5h-2.19L14.72 6.03a.75.75 0 00-1.06-1.06l-2.78 2.78V4.75z" clip-rule="evenodd" />
+            </svg>
+            Back to Admin Dashboard
+        </a>
+        
+        <div class="admin-header">
+            <h1>Manage Services</h1>
+        </div>
+
+        <div id="service-form-card" class="card service-form-card">
+            <h2>Create/Edit Service</h2>
+            <form id="upsert-service-form" class="service-form">
+                <label for="service-id">Service ID:</label>
+                <input type="text" id="service-id" name="id" placeholder="e.g., ministry_health" required>
+
+                <label for="service-name-en">Name (English):</label>
+                <input type="text" id="service-name-en" name="name_en" placeholder="e.g., Ministry of Health" required>
+
+                <label for="service-name-si">Name (Sinhala):</label>
+                <input type="text" id="service-name-si" name="name_si" placeholder="e.g., සෞඛ්‍ය අමාත්‍යාංශය">
+
+                <label for="service-name-ta">Name (Tamil):</label>
+                <input type="text" id="service-name-ta" name="name_ta" placeholder="e.g., சுகாதார அமைச்சு">
+
+                <label for="service-subservices-json">Subservices (JSON format):</label>
+                <textarea id="service-subservices-json" name="subservices_json" rows="10" placeholder='[{"id": "general", "name": {"en": "General Services"}, "questions": [{"q": {"en": "What services?"}, "answer": {"en": "Check list"}}]}]'></textarea>
+
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="height:1.2em; width:1.2em; vertical-align:middle; margin-right:5px;">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8.25 7.75a.75.75 0 01.75-.75h2a.75.75 0 010 1.5H9v2.25a.75.75 0 01-1.5 0v-2.25zM10 15a1 1 0 100-2 1 1 0 000 2z" />
+                    </svg>
+                    Save Service
+                </button>
+            </form>
+        </div>
+
+        <div id="service-list-container" class="card service-list-card">
+            <h2>Existing Services</h2>
+            <ul id="existing-services-list">
+                <!-- Services will be loaded here by manage.js -->
+                <li class="service-item">
+                    <span>Loading services...</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="/static/manage.js"></script>
+</body>
+</html>
