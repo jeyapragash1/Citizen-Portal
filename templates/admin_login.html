@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+<div style="max-width:480px; margin:60px auto;">
+  <div class="login-box" style="text-align:left;">
+    <h2 style="text-align:center;">Admin Login</h2>
+    <form id="login-form" class="login-form" method="post" action="/admin/login">
+      <label for="username">Username</label>
+      <input name="username" type="text" id="username" value="admin" placeholder="Enter username"/>
+      <label for="password">Password</label>
+      <input name="password" type="password" id="password" value="admin123" placeholder="Enter password"/>
+      <button type="submit">Login</button>
+    </form>
+    <div style="margin-top:12px; font-size:0.9em; color:#666;">If the database is unreachable, use the fallback admin credentials.</div>
+  </div>
+</div>
+{% endblock %}

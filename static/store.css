@@ -1,0 +1,16 @@
+/* Minimal styles for the public store page */
+.store-container{max-width:1200px;margin:20px auto;padding:10px;font-family:Arial,Helvetica,sans-serif}
+.store-header{display:flex;justify-content:space-between;align-items:center}
+.store-actions input{padding:8px;border:1px solid #ccc;border-radius:4px}
+.store-layout{display:flex;gap:20px}
+.filters-sidebar{width:260px;padding:12px;border:1px solid #eee;background:#fafafa}
+.products-grid{flex:1}
+.product-card{display:flex;gap:12px;border:1px solid #eee;padding:10px;margin:8px;border-radius:6px;cursor:pointer}
+.product-image img{max-width:160px;max-height:120px;object-fit:cover}
+.add-to-cart-btn{background:#007bff;color:#fff;border:none;padding:8px 10px;border-radius:4px}
+.modal{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
+.modal .modal-content{background:#fff;padding:16px;border-radius:6px;max-width:800px;width:90%}
+.cart-item{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.notification{position:fixed;right:20px;bottom:20px;background:#333;color:#fff;padding:10px 14px;border-radius:6px}
+.main-nav{margin-left:20px;display:inline-block}
+.main-nav a{margin-right:12px;color:#fff;background:transparent;padding:6px 10px;border-radius:4px;text-decoration:none}

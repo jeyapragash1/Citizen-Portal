@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2 class="auth-title">Create an account</h2>
+    <p class="text-muted">Register to access personalized features and the public store.</p>
+    <form id="registerForm" class="auth-form">
+      <label>Email <span class="required-asterisk">*</span>
+        <input type="email" name="email" required placeholder="you@example.com">
+      </label>
+
+      <label>Name
+        <input type="text" name="name" placeholder="Full name">
+      </label>
+
+      <label>Password <span class="required-asterisk">*</span>
+        <input type="password" name="password" required placeholder="Choose a strong password">
+      </label>
+
+      <button type="submit" class="primary-btn">Register</button>
+    </form>
+
+    <div class="result-output">
+      <pre id="result" aria-live="polite"></pre>
+    </div>
+    <div class="auth-footer text-center">
+      <small>Already have an account? <a href="/login">Log in</a></small>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f = e.target;
+  const data = {email: f.email.value, name: f.name.value, password: f.password.value};
+  const res = await fetch('/api/user/register', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+  const j = await res.json();
+  const out = document.getElementById('result');
+  out.textContent = JSON.stringify(j, null, 2);
+  // Add simple visual success/error highlight
+  if (j && j.status === 'ok') {
+    out.parentElement.classList.add('result-success');
+    out.parentElement.classList.remove('result-error');
+    // After registration, redirect the user to the portal index
+    window.location.href = '/index';
+  } else {
+    out.parentElement.classList.add('result-error');
+    out.parentElement.classList.remove('result-success');
+  }
+});
+</script>
+{% endblock %}

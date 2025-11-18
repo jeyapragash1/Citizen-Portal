@@ -1,0 +1,18 @@
+Flask==2.3.2
+flask-cors==3.0.10
+pymongo[srv]==4.4.1
+dnspython==2.4.2
+python-dotenv==1.0.1
+Flask-Session==0.8.0
+bcrypt==4.0.1
+flask-login==0.6.3
+cachelib==0.13.0
+requests==2.31.0
+pytest==7.4.0
+apscheduler==3.10.1
+numpy==2.3.4
+# Optional ML packages (commented out to avoid local Rust/tokenizer builds)
+# sentence-transformers==2.2.2
+# transformers==4.29.0
+# tokenizers==0.13.3
+# sentencepiece==0.2.1

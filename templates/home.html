@@ -1,0 +1,724 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <h1>Citizen Portal</h1>
+        <p class="lead">Your gateway to all government services, guidance, and digital forms. Find what you need quickly and easily in one centralized platform.</p>
+        <div class="cta">
+          <a class="primary-btn" href="/login">
+            <span>Start Now</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a class="secondary-btn" href="/register">Create Account</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Services</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Access</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">Satisfaction</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="floating-card card-1">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 2V8H20" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 13H8" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 17H8" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 9H9H8" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>Digital Forms</span>
+        </div>
+        <div class="floating-card card-2">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>AI Assistant</span>
+        </div>
+        <div class="floating-card card-3">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19.4 15C19.2669 15.4064 19.1338 15.8128 19.0007 16.2191C18.5297 17.5739 17.8222 18.8341 16.9133 19.9372C15.239 22.1776 12.7656 23.498 10.1538 23.498C7.54206 23.498 5.06861 22.1776 3.3943 19.9372C2.48542 18.8341 1.77793 17.5739 1.30693 16.2191C1.1026 15.6128 0.898266 15.0066 0.693939 14.4003C0.488356 13.7896 0.282773 13.1789 0.0771903 12.5682C-0.0257301 12.2628 -0.0257301 11.7372 0.0771903 11.4318C0.282773 10.8211 0.488356 10.2104 0.693939 9.59966C1.1026 8.24087 1.81009 6.9807 2.71897 5.87756C4.39328 3.63719 6.86673 2.31677 9.47848 2.31677C12.0902 2.31677 14.5637 3.63719 16.238 5.87756C17.1469 6.9807 17.8544 8.24087 18.3254 9.59966C18.5309 10.2104 18.7365 10.8211 18.9421 11.4318C19.045 11.7372 19.045 12.2628 18.9421 12.5682C18.8392 12.8736 18.7363 13.1789 18.6334 13.4843" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>Secure Access</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <div class="section-header">
+      <h2>What You Can Do</h2>
+      <p>Explore the comprehensive features designed to simplify your interactions with government services</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 17H7C5.89543 17 5 16.1046 5 15V5C5 3.89543 5.89543 3 7 3H17C18.1046 3 19 3.89543 19 5V15C19 16.1046 18.1046 17 17 17H15" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 7H15" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 11H15" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 21L9 17H15L12 21Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Discover Services</h3>
+        <p>Browse by category, ministry and sub-service to find official guidance, documents, and application forms.</p>
+        <ul>
+          <li>Ministry-specific services</li>
+          <li>Categorized by purpose</li>
+          <li>Step-by-step guidance</li>
+        </ul>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.663 17H4.495A1.495 1.495 0 0 1 3.036 13.7l2.598-4.5a1.5 1.5 0 0 1 2.598 0l2.598 4.5A1.495 1.495 0 0 1 9.663 17Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12.402 3.425a1.495 1.495 0 0 1 2.595 0l6 10.392A1.5 1.5 0 0 1 19.799 17h-12a1.5 1.5 0 0 1-1.298-2.183l6-10.392Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>AI Assistant</h3>
+        <p>Use our intelligent AI search to quickly find answers, relevant documents, and personalized recommendations.</p>
+        <ul>
+          <li>Natural language queries</li>
+          <li>Context-aware responses</li>
+          <li>Document recommendations</li>
+        </ul>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Personal Profile</h3>
+        <p>Create an account to get personalized recommendations, save progress, and track your service applications.</p>
+        <ul>
+          <li>Personalized dashboard</li>
+          <li>Application history</li>
+          <li>Saved services</li>
+        </ul>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C12.5523 22 13 21.5523 13 21C13 20.4477 12.5523 20 12 20C11.4477 20 11 20.4477 11 21C11 21.5523 11.4477 22 12 22Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 17V7" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M17 12L7 12" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Secure Actions</h3>
+        <p>Request data export or deletion and manage consent preferences with our privacy-focused tools.</p>
+        <ul>
+          <li>Data export requests</li>
+          <li>Account deletion</li>
+          <li>Privacy controls</li>
+        </ul>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.3246 4.31731C10.751 2.5609 13.249 2.5609 13.6754 4.31731C13.9508 5.45193 15.2507 5.99038 16.2478 5.38285C17.7913 4.44239 19.5576 6.2087 18.6172 7.75218C18.0096 8.74925 18.5481 10.0492 19.6827 10.3246C21.4391 10.751 21.4391 13.249 19.6827 13.6754C18.5481 13.9508 18.0096 15.2507 18.6172 16.2478C19.5576 17.7913 17.7913 19.5576 16.2478 18.6172C15.2507 18.0096 13.9508 18.5481 13.6754 19.6827C13.249 21.4391 10.751 21.4391 10.3246 19.6827C10.0492 18.5481 8.74926 18.0096 7.75219 18.6172C6.2087 19.5576 4.44239 17.7913 5.38285 16.2478C5.99038 15.2507 5.45193 13.9508 4.31731 13.6754C2.5609 13.249 2.5609 10.751 4.31731 10.3246C5.45193 10.0492 5.99037 8.74926 5.38285 7.75218C4.44239 6.2087 6.2087 4.44239 7.75219 5.38285C8.74926 5.99037 10.0492 5.45193 10.3246 4.31731Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="#0b66d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Admin Tools</h3>
+        <p>Administrators can manage services, index content for AI search, and view analytics in the dedicated admin area.</p>
+        <ul>
+          <li>Service management</li>
+          <li>Search index control</li>
+          <li>Usage analytics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Follow these simple steps to access government services efficiently</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Create Account</h3>
+          <p>Click <em>Start Now</em> to login or create your citizen account with secure verification.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Access Portal</h3>
+          <p>After authentication, you'll be taken to the main portal where you can browse services and ask questions.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Find Services</h3>
+          <p>Use the search function or AI assistant to quickly find documents, forms, and service information.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Complete Tasks</h3>
+          <p>Download official forms, submit applications, or get personalized recommendations for your needs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2>What Citizens Say</h2>
+      <p>Discover how our portal has helped others access government services</p>
+    </div>
+    <div class="testimonial-cards">
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"The AI assistant helped me find the right forms for my business license in minutes instead of hours!"</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar"></div>
+          <div class="author-info">
+            <h4>Sarah Johnson</h4>
+            <p>Small Business Owner</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"I was able to complete my tax documents without visiting any office. This saved me so much time!"</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar"></div>
+          <div class="author-info">
+            <h4>Michael Chen</h4>
+            <p>Freelancer</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"The personalized dashboard keeps track of all my applications. No more lost paperwork!"</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar"></div>
+          <div class="author-info">
+            <h4>Elena Rodriguez</h4>
+            <p>University Student</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="notes">
+  <div class="container">
+    <div class="notes-content">
+      <h3>Privacy & Security</h3>
+      <p>This portal stores minimal profile data and allows export/delete requests. All data is encrypted and protected according to government security standards. Administrators manage content and indexes. If you are an admin, use the admin area to manage services and rebuild the search index.</p>
+      <div class="notes-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Data Protection</a>
+        <a href="#">Contact Support</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero Section */
+.hero {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f6fbff 0%, #e6f2ff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.hero-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #0b3b7a;
+  font-weight: 700;
+}
+
+.hero .lead {
+  font-size: 1.25rem;
+  color: #444;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.cta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #0b66d1;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(11, 102, 209, 0.2);
+}
+
+.primary-btn:hover {
+  background: #0956b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(11, 102, 209, 0.3);
+}
+
+.secondary-btn {
+  padding: 14px 28px;
+  border-radius: 8px;
+  background: #fff;
+  color: #0b66d1;
+  border: 2px solid #0b66d1;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #f0f7ff;
+  transform: translateY(-2px);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0b66d1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.hero-visual {
+  flex: 1;
+  position: relative;
+  height: 400px;
+}
+
+.floating-card {
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 200px;
+  transition: transform 0.3s ease;
+}
+
+.floating-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-1 {
+  top: 20px;
+  left: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.card-2 {
+  top: 120px;
+  right: 0;
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+.card-3 {
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: float 6s ease-in-out infinite 4s;
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  background: #f0f7ff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #0b3b7a;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Features Section */
+.features {
+  padding: 100px 0;
+  background: #f9fbfe;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  width: 70px;
+  height: 70px;
+  background: #f0f7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #0b3b7a;
+}
+
+.feature-card p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.feature-card ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.feature-card li {
+  padding: 8px 0;
+  color: #666;
+  position: relative;
+  padding-left: 20px;
+}
+
+.feature-card li:before {
+  content: "•";
+  color: #0b66d1;
+  position: absolute;
+  left: 0;
+}
+
+/* How It Works Section */
+.how-it-works {
+  padding: 100px 0;
+  background: white;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.step {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  background: #0b66d1;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #0b3b7a;
+}
+
+.step-content p {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Testimonials Section */
+.testimonials {
+  padding: 100px 0;
+  background: #f9fbfe;
+}
+
+.testimonial-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.testimonial-content {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #eee;
+}
+
+.testimonial-content p {
+  font-style: italic;
+  color: #555;
+  line-height: 1.6;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.author-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e6f2ff;
+}
+
+.author-info h4 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  color: #0b3b7a;
+}
+
+.author-info p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Notes Section */
+.notes {
+  padding: 80px 0;
+  background: #0b3b7a;
+  color: white;
+}
+
+.notes-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.notes-content p {
+  margin-bottom: 30px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.notes-links {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.notes-links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.notes-links a:hover {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .hero-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .hero-stats {
+    justify-content: center;
+  }
+  
+  .hero-visual {
+    width: 100%;
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .section-header h2 {
+    font-size: 2rem;
+  }
+  
+  .cta {
+    justify-content: center;
+  }
+  
+  .step {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .notes-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero {
+    padding: 60px 0;
+  }
+  
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .features, .how-it-works, .testimonials {
+    padding: 60px 0;
+  }
+  
+  .features-grid, .testimonial-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-stats {
+    gap: 20px;
+  }
+}
+</style>
+
+{% endblock %}

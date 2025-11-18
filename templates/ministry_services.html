@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ ministry.name['en'] }} - All Services</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="/">&larr; Back to Portal</a>
+        <h1>{{ ministry.name['en'] }}: All Services</h1>
+    </header>
+    <main class="service-page container">
+        {% for subservice in ministry.subservices %}
+            <section class="service-section">
+                <h2>{{ subservice.name['en'] }}</h2>
+                <div class="service-brief">
+                    <p><strong>About this service:</strong> {{ subservice.brief if subservice.brief else "This service provides information and assistance related to " + subservice.name['en'] + "." }}</p>
+                </div>
+                <ul class="service-questions">
+                    {% for question in subservice.questions %}
+                        <li>
+                            <strong>{{ question.q['en'] }}</strong><br>
+                            {{ question.answer['en'] }}
+                            {% if question.instructions %}<br><em>Instructions: {{ question.instructions }}</em>{% endif %}
+                            {% if question.downloads %}
+                                <br><span>Downloads:
+                                {% for d in question.downloads %}
+                                    <a href="{{ d }}" target="_blank" download>{{ d.split('/')[-1] }}</a>
+                                {% endfor %}
+                                </span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="service-details">
+                    <h4>Service Details</h4>
+                    <ul>
+                        <li><strong>Eligibility:</strong> {{ subservice.eligibility if subservice.eligibility else "Please refer to official guidelines for eligibility." }}</li>
+                        <li><strong>Required Documents:</strong> {{ subservice.documents if subservice.documents else "National ID, Birth Certificate, and other relevant documents." }}</li>
+                        <li><strong>Fees:</strong> {{ subservice.fees if subservice.fees else "No fees or as per government regulations." }}</li>
+                        <li><strong>Application Steps:</strong> {{ subservice.application_steps if subservice.application_steps else "Visit the official website, fill out the application form, and submit required documents." }}</li>
+                        <li><strong>Contact:</strong> {{ subservice.contact if subservice.contact else "011-XXXXXXX | info@ministry.gov.lk" }}</li>
+                        <li><strong>Office Hours:</strong> {{ subservice.office_hours if subservice.office_hours else "Monday to Friday, 9:00 AM - 5:00 PM" }}</li>
+                        <li><strong>Location:</strong> {{ subservice.location if subservice.location else "See ministry website for office locations." }}</li>
+                    </ul>
+                </div>
+            </section>
+        {% endfor %}
+</main>
+
+<!-- Floating Chatbot Icon -->
+<button id="floating-chatbot-btn" class="floating-chatbot-btn" title="Chat with AI">
+    <i class="fas fa-robot"></i>
+</button>
+<!-- Chatbot Modal -->
+<div id="chatbot-modal" class="chatbot-modal" style="display:none;">
+    <div class="chatbot-modal-content">
+        <div class="chatbot-header">
+            <span class="chatbot-title"><i class="fas fa-robot"></i> Virtual Assistant</span>
+            <span class="close" id="close-chatbot-modal">&times;</span>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div class="chatbot-input-container">
+            <input type="text" id="chatbot-input" placeholder="Type your question...">
+            <button id="chatbot-send-btn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+<script src="/static/chatbot.js"></script>
+</body>

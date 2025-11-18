@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1>Admin Dashboard</h1>
+
+<div class="dashboard-grid" style="margin-top:12px;">
+  <div class="card metric-card">
+    <h3>Users</h3>
+    <div class="metric-value">{{ analytics.user_metrics.total_users if analytics.user_metrics else (total_users or 'N/A') }}</div>
+    <div class="metric-sub">Active (30d): {{ analytics.user_metrics.active_users if analytics.user_metrics else 'N/A' }}</div>
+  </div>
+
+  <div class="card metric-card">
+    <h3>Engagements</h3>
+    <div class="metric-value">{{ analytics.engagement_metrics.total_engagements if analytics.engagement_metrics else (total_engagements or 'N/A') }}</div>
+    <div class="metric-sub">Recent (7d): {{ analytics.engagement_metrics.recent_engagements if analytics.engagement_metrics else 'N/A' }}</div>
+  </div>
+
+  <div class="card metric-card">
+    <h3>Store</h3>
+    <div class="metric-value">Orders: {{ analytics.store_metrics.total_orders if analytics.store_metrics else 'N/A' }}</div>
+    <div class="metric-sub">Revenue: {{ analytics.store_metrics.total_revenue if analytics.store_metrics else 'N/A' }}</div>
+  </div>
+
+  <div class="card metric-card">
+    <h3>Segments</h3>
+    <div class="metric-sub small-list">
+      {% if analytics.user_segments %}
+        {% for seg, cnt in analytics.user_segments.items() %}
+          <div>{{ seg }}: <strong>{{ cnt }}</strong></div>
+        {% endfor %}
+      {% else %}
+        <div>No segment data</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:18px;">
+  <h2 style="margin-top:0">Popular Products</h2>
+  <div class="products-list">
+    {% if analytics.popular_products and analytics.popular_products|length > 0 %}
+      {% for p in analytics.popular_products %}
+        <div class="product-item">
+          <div class="product-title">{{ p.title or p.name or p.get('name', {}).get('en') or p.get('title','Unnamed') }}</div>
+          <div class="product-meta">Category: {{ p.category or '—' }} • Price: {{ p.price or '—' }} • Rating: {{ p.rating or '—' }}</div>
+          <div class="product-desc">{{ p.description or '' }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-muted">No popular products available.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:18px;">
+  <h2 style="margin-top:0">Recent Activities</h2>
+  {% if analytics.recent_activities and analytics.recent_activities|length > 0 %}
+    <table class="engagements-table">
+      <thead><tr><th>When</th><th>User</th><th>Action</th><th>Service / Question</th></tr></thead>
+      <tbody>
+      {% for a in analytics.recent_activities %}
+        <tr>
+          <td>{{ a.timestamp or a.get('timestamp') or '—' }}</td>
+          <td>{{ a.user_id or a.get('user_id') or 'anonymous' }}</td>
+          <td>{{ a.get('type') or a.get('event') or 'engagement' }}</td>
+          <td>{{ a.get('question_clicked') or a.get('service') or a.get('title') or '—' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="text-muted">No recent activities available.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

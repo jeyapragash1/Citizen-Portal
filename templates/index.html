@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Citizen Services Portal{% endblock %}
+
+{% block content %}
+<div class="portal-main-content">
+    <!-- Super Categories Panel (Leftmost) -->
+    <aside class="categories-sidebar portal-panel">
+        <h2>Super Categories</h2>
+        <ul id="super-category-list" class="category-list">
+            <!-- Super Categories will be loaded here by script.js -->
+        </ul>
+
+        <div class="ads-area" id="ads-area" style="margin-top: var(--spacing-xl); padding-top: var(--spacing-md); border-top: 1px solid var(--border-color);">
+            <h3>Announcements</h3>
+            <!-- Ads will be loaded here by script.js -->
+            <div class="text-muted text-center">Loading ads...</div>
+        </div>
+    </aside>
+
+    <!-- Ministries Panel (Middle) -->
+    <section class="ministries-panel portal-panel">
+        <h2 id="ministry-panel-title" class="panel-title">Select a Super Category to view Ministries</h2>
+        <ul id="ministry-list" class="service-list">
+            <!-- Ministries will be loaded here by script.js -->
+        </ul>
+    </section>
+
+    <!-- Services/Questions Panel (Rightmost) -->
+    <main class="services-questions-panel portal-panel">
+        <h2 id="services-questions-panel-title" class="panel-title">Select a Ministry to view Services/Questions</h2>
+        <ul id="subservice-list" class="service-list">
+            <!-- Subservices (Services) will be loaded here by script.js -->
+        </ul>
+        <div id="answer-box">
+            <!-- Answer will be displayed here by script.js -->
+            <h3>Welcome to Citizen Services Portal!</h3>
+            <p>Use the search bar above or select a Super Category, then a Ministry, and finally a Service to find information.</p>
+            <p class="text-muted">Your interactions help us improve services for everyone. Click "Ask AI" in the header to use our AI assistant!</p>
+        </div>
+    </main>
+</div>
+
+<!-- New AI Chat Modal Widget -->
+<div id="ai-chat-modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="modal-content chat-modal">
+        <div class="chat-header">
+            <h3>AI Assistant</h3>
+            <button class="close-chat-btn" onclick="closeAIChatModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-msg bot-msg">Hello! I'm your AI Assistant. How can I help you today?</div>
+        </div>
+        <div class="chat-input-area">
+            <input id="chat-text-input" placeholder="Type your question..." onkeyup="if(event.keyCode===13) sendAIChat()"/>
+            <button onclick="sendAIChat()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+        <ul id="chat-autosuggestions" class="chat-autosuggestions">
+            <!-- AI search suggestions will appear here -->
+        </ul>
+    </div>
+</div>
+<!-- End AI Chat Modal Widget -->
+
+<!-- New 3-Step Progressive Profile Modal (replaces old demographic modal) -->
+<div id="profile-modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="modal-content profile-modal">
+        <h3 id="profile-step-title">form to continue</h3>
+        <form id="profile-form" class="modal-form">
+            <label for="p_name">Your Name <span class="required-asterisk">*</span></label>
+            <input type="text" id="p_name" placeholder="Full name" required />
+            <label for="p_age">Your Age <span class="required-asterisk">*</span></label>
+            <input type="number" id="p_age" placeholder="Age" min="1" max="120" required />
+            <label for="p_email">Email <span class="required-asterisk">*</span></label>
+            <input type="email" id="p_email" placeholder="Email address" required />
+            <label for="p_phone">Phone Number <span class="required-asterisk">*</span></label>
+            <input type="tel" id="p_phone" placeholder="Mobile number" pattern="[0-9.\-]{7,25}" required />
+            <label for="p_job">Your Job <span class="required-asterisk">*</span></label>
+            <input type="text" id="p_job" placeholder="Job role / workplace" required />
+            <label for="p_desire" class="full-width">Main Interest Here <span class="required-asterisk">*</span></label>
+            <input type="text" id="p_desire" class="full-width" placeholder="e.g., Government Forms, Health Services" required />
+            <button type="submit" class="profile-submit-btn">Submit <i class="fas fa-check"></i></button>
+        </form>
+        <button class="close-profile-btn" onclick="closeProfileModal()" title="Close"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+<!-- End New 3-Step Progressive Profile Modal -->
+
+{% endblock %}
