@@ -633,11 +633,11 @@
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="/admin/manage" class="menu-item">
+                    <a href="#userManagement" id="userManagementLink" class="menu-item">
                         <i class="fas fa-users"></i>
                         <span>User Management</span>
                     </a>
-                    <a href="/admin/categories" class="menu-item">
+                    <a href="#categories" id="categoriesLink" class="menu-item">
                         <i class="fas fa-list-alt"></i>
                         <span>Categories</span>
                     </a>
@@ -784,6 +784,36 @@
                 </div>
             </div>
 
+            <!-- User Management Section -->
+            <div class="table-section" id="userManagement">
+                <div class="section-header">
+                    <h3>User Management</h3>
+                    <div class="section-actions">
+                        <button id="exportProfilesBtnHeader" class="btn btn-primary">
+                            <i class="fas fa-file-export"></i> Export Profiles
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="profilesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Profile ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Job</th>
+                                <th>Desires</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- AI Search Index Section -->
             <div class="table-section" id="ai-search-index">
                 <div class="section-header">
@@ -825,8 +855,30 @@
 
     <!-- Premium suggestions placeholder used by admin.js -->
     <div id="premiumList" style="display:none;"></div>
+    <!-- Categories admin helper (embedded UI for managing categories inside dashboard) -->
+    <div id="categoriesEmbedTemplate" style="display:none">
+        <div class="table-section" id="categoriesSection">
+            <div class="section-header">
+                <h3>Categories</h3>
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="categoriesReloadBtn"><i class="fas fa-sync-alt"></i> Reload</button>
+                </div>
+            </div>
+            <div style="margin-bottom:12px;">
+                <form id="categoryForm" onsubmit="return saveCategory(event)" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                    <input id="catId" class="form-control" placeholder="Category ID (e.g., health)" style="width:220px;">
+                    <input id="catName" class="form-control" placeholder="Category name" style="width:260px;">
+                    <button id="categorySaveBtn" class="btn btn-primary">Save</button>
+                    <div id="categoryFormError" style="display:none; color:#d9534f; margin-left:8px;"></div>
+                </form>
+            </div>
+            <div id="categoriesList"></div>
+        </div>
+    </div>
     <!-- Load admin client script (binds login, loads data) -->
     <script src="/static/admin.js"></script>
+    <!-- Load categories admin helper so the dashboard can embed the categories UI -->
+    <script src="/static/admin_categories.js"></script>
 
     <script>
         // Minimal UI helpers: keep sidebar toggle functional.

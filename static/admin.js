@@ -249,6 +249,19 @@ async function loadJobDetails(jobId) {
     }
 }
 async function loadProfiles() {
+    // Prefer an explicit `#userManagement` section/table if present.
+    const userSection = document.getElementById('userManagement');
+    const existingProfilesTable = document.getElementById('profilesTable');
+
+    // If an existing table is present in the DOM, re-use it so we don't create duplicates.
+    if (existingProfilesTable && !profileTableEl) {
+        profileTableEl = existingProfilesTable;
+        // Remove any existing tbody so we can manage rows consistently via `profileTableBody`.
+        const existingTbody = profileTableEl.querySelector('tbody');
+        if (existingTbody) existingTbody.remove();
+        profileTableEl.appendChild(profileTableBody);
+    }
+
     // Create table if not exists
     if (!profileTableEl) {
         // Use the existing dashboard table styles by applying `data-table`.
@@ -266,10 +279,13 @@ async function loadProfiles() {
         // Choose a reliable insertion point: prefer the Recent Engagements section
         // (`#recentEngagements`) or the closest `.table-section` so the created
         // table inherits the dashboard table styles and layout.
-        let section = null;
-        const engTable = document.getElementById('engTable');
-        if (engTable) {
-            section = engTable.closest('.table-section') || document.getElementById('recentEngagements') || engTable.parentElement || null;
+        // Prefer explicit userManagement section if present, otherwise fall back to recentEngagements.
+        let section = userSection || null;
+        if (!section) {
+            const engTable = document.getElementById('engTable');
+            if (engTable) {
+                section = engTable.closest('.table-section') || document.getElementById('recentEngagements') || engTable.parentElement || null;
+            }
         }
         if (!section) {
             section = document.getElementById('recentEngagements') || document.querySelector('.table-section') || document.getElementById('dashboard') || document.body;
@@ -411,6 +427,67 @@ async function loadProfiles() {
         profileTableBody.insertAdjacentHTML('beforeend', row);
     });
 }
+
+// Attach sidebar navigation handlers after DOM is ready (robust to script ordering).
+document.addEventListener('DOMContentLoaded', function attachNavHandlers() {
+    function bindOnce(el, name, handler) {
+        if (!el) return;
+        if (el.dataset && el.dataset.navAttached) return;
+        el.addEventListener(name, handler);
+        if (el.dataset) el.dataset.navAttached = '1';
+    }
+
+    bindOnce(document.getElementById('userManagementLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('User Management click');
+        const sec = document.getElementById('userManagement');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        try {
+            await loadProfiles();
+        } catch (err) {
+            console.error('Error loading profiles on click', err);
+        }
+    });
+
+    bindOnce(document.getElementById('categoriesLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('Categories click');
+        // If categories section already exists in DOM, scroll and reload
+        let catSection = document.getElementById('categoriesSection');
+        if (!catSection) {
+            const tpl = document.getElementById('categoriesEmbedTemplate');
+            const recent = document.getElementById('recentEngagements');
+            const main = document.querySelector('.admin-main') || document.getElementById('dashboard') || document.body;
+            if (tpl && main) {
+                const container = document.createElement('div');
+                container.innerHTML = tpl.innerHTML;
+                if (recent && recent.parentNode) recent.parentNode.insertBefore(container.firstElementChild, recent.nextSibling);
+                else main.appendChild(container.firstElementChild);
+                catSection = document.getElementById('categoriesSection');
+                // Wire reload button if present
+                bindOnce(document.getElementById('categoriesReloadBtn'), 'click', () => {
+                    if (typeof loadCategories === 'function') loadCategories();
+                });
+            } else {
+                console.warn('Categories template or main container not found');
+            }
+        }
+        if (catSection) {
+            catSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (typeof loadCategories === 'function') {
+                try { await loadCategories(); } catch (err) { console.error('Failed to load categories', err); }
+            }
+        }
+    });
+
+    // Also wire the header export/profile buttons if they exist (idempotent)
+    bindOnce(document.getElementById('exportProfilesBtnHeader'), 'click', () => { window.location = '/api/admin/export_profiles'; });
+});
+
+// Wire export button in the header if present
+document.getElementById('exportProfilesBtnHeader')?.addEventListener('click', () => {
+    window.location = '/api/admin/export_profiles';
+});
 
 function renderCharts(data) {
     // Age Chart
