@@ -251,40 +251,63 @@ async function loadJobDetails(jobId) {
 async function loadProfiles() {
     // Create table if not exists
     if (!profileTableEl) {
+        // Use the existing dashboard table styles by applying `data-table`.
+        // Also wrap the table in a `.table-responsive` container so it matches
+        // other tables on the admin dashboard and avoids layout issues.
         profileTableEl = document.createElement('table');
-        profileTableEl.className = 'engagements-table';
+        profileTableEl.className = 'data-table engagements-table';
         profileTableEl.innerHTML = `<thead><tr><th>Profile ID</th><th>Name</th><th>Age</th><th>Email</th><th>Phone</th><th>Job</th><th>Desires</th><th>Created</th><th>Updated</th></tr></thead>`;
         profileTableEl.appendChild(profileTableBody);
 
-        // Choose a reliable insertion point: the Recent Engagements section (engTable), or fallback to dashboard
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-responsive';
+        wrapper.appendChild(profileTableEl);
+
+        // Choose a reliable insertion point: prefer the Recent Engagements section
+        // (`#recentEngagements`) or the closest `.table-section` so the created
+        // table inherits the dashboard table styles and layout.
         let section = null;
         const engTable = document.getElementById('engTable');
-        if (engTable && typeof engTable.closest === 'function') {
-            section = engTable.closest('.section-card');
+        if (engTable) {
+            section = engTable.closest('.table-section') || document.getElementById('recentEngagements') || engTable.parentElement || null;
         }
         if (!section) {
-            section = document.getElementById('dashboard') || document.body;
+            section = document.getElementById('recentEngagements') || document.querySelector('.table-section') || document.getElementById('dashboard') || document.body;
         }
 
-        // Append a header and the profiles table
+        // Append a header and the profiles table inside the chosen section.
         const header = document.createElement('h3');
+        header.id = 'profilesHeader';
         header.textContent = 'All User Profiles';
-        section.appendChild(header);
-        section.appendChild(profileTableEl);
+
+        // Prefer inserting right after the section header so the table appears
+        // with the same spacing as other sections. If not available, append at end.
+        const sectionHeaderEl = section.querySelector('.section-header');
+        if (sectionHeaderEl && sectionHeaderEl.parentNode) {
+            sectionHeaderEl.parentNode.insertBefore(header, sectionHeaderEl.nextSibling);
+            sectionHeaderEl.parentNode.insertBefore(wrapper, header.nextSibling);
+        } else {
+            section.appendChild(header);
+            section.appendChild(wrapper);
+        }
 
         // Add export button
         const exportProfilesBtn = document.createElement('button');
         exportProfilesBtn.className = 'export-csv-button';
         exportProfilesBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Profiles CSV';
         exportProfilesBtn.onclick = () => { window.location = '/api/admin/export_profiles'; };
-        section.appendChild(exportProfilesBtn);
+        if (sectionHeaderEl && sectionHeaderEl.parentNode) {
+            sectionHeaderEl.parentNode.insertBefore(exportProfilesBtn, wrapper.nextSibling);
+        } else {
+            section.appendChild(exportProfilesBtn);
+        }
     }
 
     // Ensure we have a timeframe selector for profiles (create it once)
     // Insert it near the engagements controls when possible
     if (!document.getElementById('profilesTimeframe')) {
         let insertBeforeEl = null;
-        const engSection = document.getElementById('engTable') ? document.getElementById('engTable').closest('.section-card') : null;
+        const engSection = document.getElementById('engTable') ? (document.getElementById('engTable').closest('.table-section') || document.getElementById('recentEngagements')) : null;
         if (engSection) insertBeforeEl = engSection.querySelector('h3')?.nextSibling || engSection.firstChild;
         const wrapper = document.createElement('div');
         wrapper.style.display = 'flex';
@@ -309,7 +332,7 @@ async function loadProfiles() {
         wrapper.appendChild(sel);
 
         // Prefer to insert near engagements section; otherwise, put before profiles header
-        const profilesHeader = profileTableEl.previousElementSibling;
+        const profilesHeader = document.getElementById('profilesHeader');
         if (insertBeforeEl && insertBeforeEl.parentNode) {
             insertBeforeEl.parentNode.insertBefore(wrapper, insertBeforeEl);
         } else if (profilesHeader && profilesHeader.parentNode) {
@@ -410,7 +433,10 @@ function renderCharts(data) {
     }
 
     // Jobs Chart
-    const jobEl = document.getElementById("jobChart") || document.getElementById('serviceChart');
+    // Use only an explicit `jobChart` canvas when present. Avoid falling back to
+    // `serviceChart` because that can cause two Chart instances to be created
+    // on the same canvas (Chart.js throws "Canvas is already in use").
+    const jobEl = document.getElementById("jobChart");
     if (jobEl) {
         chartInstances.jobChart = new Chart(jobEl, {
         type:'pie',
@@ -444,7 +470,9 @@ function renderCharts(data) {
     }
 
     // Questions Chart
-    const questionEl = document.getElementById("questionChart") || document.getElementById('engagementChart');
+    // Use only an explicit `questionChart` canvas to avoid accidentally
+    // reusing `engagementChart` which may already be rendered.
+    const questionEl = document.getElementById("questionChart");
     if (questionEl) {
         chartInstances.questionChart = new Chart(questionEl, {
         type:'bar',
