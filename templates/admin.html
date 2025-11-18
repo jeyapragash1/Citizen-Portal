@@ -641,7 +641,7 @@
                         <i class="fas fa-list-alt"></i>
                         <span>Categories</span>
                     </a>
-                    <a href="/admin/manage" class="menu-item">
+                    <a href="#services" id="servicesLink" class="menu-item">
                         <i class="fas fa-cogs"></i>
                         <span>Services</span>
                     </a>
@@ -656,18 +656,18 @@
                         <i class="fas fa-search"></i>
                         <span>AI Search Index</span>
                     </a>
-                    <a href="#" class="menu-item">
+                    <a href="#ads" id="adsLink" class="menu-item">
                         <i class="fas fa-bullhorn"></i>
                         <span>Ad Management</span>
                     </a>
                 </div>
                 <div class="menu-section">
                     <div class="menu-title">Data</div>
-                    <a href="/api/admin/export_profiles" class="menu-item">
+                    <a href="#exportData" id="exportDataLink" class="menu-item">
                         <i class="fas fa-file-export"></i>
                         <span>Export Data</span>
                     </a>
-                    <a href="/api/admin/load_index_from_db" class="menu-item">
+                    <a href="#backupRestore" id="backupRestoreLink" class="menu-item">
                         <i class="fas fa-database"></i>
                         <span>Backup & Restore</span>
                     </a>
@@ -875,10 +875,60 @@
             <div id="categoriesList"></div>
         </div>
     </div>
+    <!-- Services admin helper (embedded UI) -->
+    <div id="servicesEmbedTemplate" style="display:none">
+        <div class="table-section" id="servicesSection">
+            <div class="section-header">
+                <h3>Services</h3>
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="servicesReloadBtn"><i class="fas fa-sync-alt"></i> Reload</button>
+                </div>
+            </div>
+            <div style="margin-bottom:12px;">
+                <div id="service-form-card" class="card service-form-card" style="margin-bottom:12px;">
+                    <h4>Create / Edit Service</h4>
+                    <form id="upsert-service-form" class="service-form">
+                        <input type="text" id="service-id" name="service-id" class="form-control" placeholder="Service ID">
+                        <input type="text" id="service-name-en" name="service-name-en" class="form-control" placeholder="Name (EN)">
+                        <textarea id="service-subservices-json" name="service-subservices-json" class="form-control" placeholder='Subservices JSON'></textarea>
+                        <button type="submit" class="btn btn-primary">Save Service</button>
+                    </form>
+                </div>
+                <div id="service-list-container" class="card service-list-card">
+                    <h4>Existing Services</h4>
+                    <ul id="existing-services-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ads admin helper (embedded UI) -->
+    <div id="adsEmbedTemplate" style="display:none">
+        <div class="table-section" id="adsSection">
+            <div class="section-header">
+                <h3>Ad Management</h3>
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="adsReloadBtn"><i class="fas fa-sync-alt"></i> Reload</button>
+                </div>
+            </div>
+            <div style="margin-bottom:12px;">
+                <form id="adForm" onsubmit="return saveAd(event)" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                    <input id="adId" class="form-control" placeholder="Ad ID" style="width:180px;">
+                    <input id="adTitle" class="form-control" placeholder="Title" style="width:260px;">
+                    <input id="adBody" class="form-control" placeholder="Body" style="width:320px;">
+                    <button id="adSaveBtn" class="btn btn-primary">Save</button>
+                    <div id="adFormError" style="display:none; color:#d9534f; margin-left:8px;"></div>
+                </form>
+                <div id="adsList"></div>
+            </div>
+        </div>
+    </div>
     <!-- Load admin client script (binds login, loads data) -->
     <script src="/static/admin.js"></script>
-    <!-- Load categories admin helper so the dashboard can embed the categories UI -->
+    <!-- Load admin helper scripts used by embedded templates -->
     <script src="/static/admin_categories.js"></script>
+    <script src="/static/manage.js"></script>
+    <script src="/static/admin_ads.js"></script>
 
     <script>
         // Minimal UI helpers: keep sidebar toggle functional.

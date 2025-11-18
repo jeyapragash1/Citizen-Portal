@@ -1,12 +1,29 @@
 async function loadCategories() {
     const el = document.getElementById('categoriesList');
+    if (!el) return; // nothing to do when embedded container isn't present
     el.innerHTML = 'Loading...';
+    // Prevent rapid repeated calls from the client
+    if (!window._lastCategoriesLoad) window._lastCategoriesLoad = 0;
+    const now = Date.now();
+    if (now - window._lastCategoriesLoad < 1500) {
+        el.innerHTML = '<div style="color:#666">Please wait a moment before reloading categories.</div>';
+        return;
+    }
+    window._lastCategoriesLoad = now;
     try {
         const res = await fetch('/api/admin/categories');
-        if (!res.ok) throw new Error('Failed to load categories');
+        if (res.status === 429) {
+            // Rate limited: show friendly message using Retry-After if present
+            const retry = res.headers.get('Retry-After');
+            const wait = retry ? `Retry after ${retry} seconds.` : 'Please wait a moment and try again.';
+            el.innerHTML = `<div style="color:#d9534f">Too many requests. ${wait}</div>`;
+            return;
+        }
+        if (!res.ok) throw new Error('Failed to load categories: ' + res.status);
         const data = await res.json();
         renderCategories(data);
     } catch (e) {
+        console.error('loadCategories error', e);
         el.innerHTML = '<div style="color:red">Error loading categories: ' + String(e) + '</div>';
     }
 }
@@ -103,6 +120,5 @@ async function editCategory(idEnc){
 }
 
 // Boot
-document.addEventListener('DOMContentLoaded', function(){
-    loadCategories();
-});
+// Removed automatic load on DOMContentLoaded to avoid accidental rapid calls
+// The dashboard embeds/categories trigger `loadCategories()` when needed.

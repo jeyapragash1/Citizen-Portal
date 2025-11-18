@@ -1,6 +1,14 @@
 async function loadAds() {
     const el = document.getElementById('adsList');
+    if (!el) return; // embedded container not present
     el.innerHTML = 'Loading...';
+    if (!window._lastAdsLoad) window._lastAdsLoad = 0;
+    const now = Date.now();
+    if (now - window._lastAdsLoad < 1500) {
+        el.innerHTML = '<div style="color:#666">Please wait before reloading ads.</div>';
+        return;
+    }
+    window._lastAdsLoad = now;
     try {
         const res = await fetch('/api/admin/ads');
         if (!res.ok) throw new Error('Failed to load ads');
@@ -93,4 +101,9 @@ async function editAd(idEnc){
     }catch(err){ alert('Error editing ad: ' + err.message); }
 }
 
-document.addEventListener('DOMContentLoaded', function(){ loadAds(); });
+// Only auto-load ads if the container exists
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ if (document.getElementById('adsList')) loadAds(); });
+} else {
+    if (document.getElementById('adsList')) loadAds();
+}

@@ -23,6 +23,25 @@ const apiFetch = (url, opts = {}) => {
 // Store chart instances to destroy them before re-rendering
 let chartInstances = {};
 
+// Helper to download a Blob or string as a file
+function downloadBlob(filename, blobOrStr, mimeType) {
+    if (!blobOrStr) return;
+    if (blobOrStr instanceof Blob) {
+        const url = URL.createObjectURL(blobOrStr);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        return;
+    }
+    // If plain string provided, create a blob
+    const blob = new Blob([blobOrStr], { type: mimeType || 'application/octet-stream' });
+    downloadBlob(filename, blob);
+}
+
 // --- Login / Logout ---
 loginForm.onsubmit = async (e) => {
     e.preventDefault();
@@ -429,7 +448,7 @@ async function loadProfiles() {
 }
 
 // Attach sidebar navigation handlers after DOM is ready (robust to script ordering).
-document.addEventListener('DOMContentLoaded', function attachNavHandlers() {
+function attachNavHandlers() {
     function bindOnce(el, name, handler) {
         if (!el) return;
         if (el.dataset && el.dataset.navAttached) return;
@@ -480,9 +499,210 @@ document.addEventListener('DOMContentLoaded', function attachNavHandlers() {
         }
     });
 
+    // Services link: inject services embed template and call loadExistingServices()
+    bindOnce(document.getElementById('servicesLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('Services click');
+        let svcSection = document.getElementById('servicesSection');
+        if (!svcSection) {
+            const tpl = document.getElementById('servicesEmbedTemplate');
+            const recent = document.getElementById('recentEngagements');
+            const main = document.querySelector('.admin-main') || document.getElementById('dashboard') || document.body;
+            if (tpl && main) {
+                const container = document.createElement('div');
+                container.innerHTML = tpl.innerHTML;
+                if (recent && recent.parentNode) recent.parentNode.insertBefore(container.firstElementChild, recent.nextSibling);
+                else main.appendChild(container.firstElementChild);
+                svcSection = document.getElementById('servicesSection');
+                bindOnce(document.getElementById('servicesReloadBtn'), 'click', () => {
+                    if (typeof loadExistingServices === 'function') loadExistingServices();
+                });
+            } else {
+                console.warn('Services template or main container not found');
+            }
+        }
+        if (svcSection) {
+            svcSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (typeof loadExistingServices === 'function') {
+                try { await loadExistingServices(); } catch (err) { console.error('Failed to load services', err); }
+            }
+        }
+    });
+
+    // Ads link: inject ads embed template and call loadAds()
+    bindOnce(document.getElementById('adsLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('Ads click');
+        let adsSection = document.getElementById('adsSection');
+        if (!adsSection) {
+            const tpl = document.getElementById('adsEmbedTemplate');
+            const recent = document.getElementById('recentEngagements');
+            const main = document.querySelector('.admin-main') || document.getElementById('dashboard') || document.body;
+            if (tpl && main) {
+                const container = document.createElement('div');
+                container.innerHTML = tpl.innerHTML;
+                if (recent && recent.parentNode) recent.parentNode.insertBefore(container.firstElementChild, recent.nextSibling);
+                else main.appendChild(container.firstElementChild);
+                adsSection = document.getElementById('adsSection');
+                bindOnce(document.getElementById('adsReloadBtn'), 'click', () => {
+                    if (typeof loadAds === 'function') loadAds();
+                });
+            } else {
+                console.warn('Ads template or main container not found');
+            }
+        }
+        if (adsSection) {
+            adsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (typeof loadAds === 'function') {
+                try { await loadAds(); } catch (err) { console.error('Failed to load ads', err); }
+            }
+        }
+    });
+
+    // Export Data link: show inline export panel with CSV and JSON backup actions
+    bindOnce(document.getElementById('exportDataLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('Export Data click');
+        let exportSection = document.getElementById('exportSection');
+        const recent = document.getElementById('recentEngagements');
+        const main = document.querySelector('.admin-main') || document.getElementById('dashboard') || document.body;
+        if (!exportSection) {
+            const container = document.createElement('div');
+            container.innerHTML = `
+                <div class="table-section" id="exportSection">
+                    <div class="section-header">
+                        <h3>Export Data</h3>
+                        <div class="section-actions">
+                            <button id="downloadEngagementsCsv" class="btn btn-primary">Download Engagements CSV</button>
+                            <button id="downloadProfilesCsv" class="btn btn-outline">Download Profiles CSV</button>
+                            <button id="downloadFullBackup" class="btn btn-outline">Download Full JSON Backup</button>
+                        </div>
+                    </div>
+                    <div id="exportStatus" style="color:var(--gray);">Choose an export action above. Large exports may take time.</div>
+                </div>`;
+            if (recent && recent.parentNode) recent.parentNode.insertBefore(container.firstElementChild, recent.nextSibling);
+            else main.appendChild(container.firstElementChild);
+            exportSection = document.getElementById('exportSection');
+
+            // Wire buttons
+            bindOnce(document.getElementById('downloadEngagementsCsv'), 'click', () => {
+                window.location = '/api/admin/export_csv';
+            });
+            bindOnce(document.getElementById('downloadProfilesCsv'), 'click', () => {
+                window.location = '/api/admin/export_profiles';
+            });
+            bindOnce(document.getElementById('downloadFullBackup'), 'click', async () => {
+                const status = document.getElementById('exportStatus');
+                status.textContent = 'Preparing backup...';
+                try {
+                    const [engRes, profRes] = await Promise.all([
+                        apiFetch('/api/admin/engagements?limit=10000'),
+                        apiFetch('/api/admin/profiles?limit=10000')
+                    ]);
+                    if (!engRes.ok || !profRes.ok) {
+                        status.textContent = 'Failed to fetch data for backup. See console for details.';
+                        console.error('Backup fetch status', engRes.status, profRes.status);
+                        return;
+                    }
+                    const engagements = await engRes.json();
+                    const profiles = await profRes.json();
+                    const blob = new Blob([JSON.stringify({profiles, engagements}, null, 2)], {type: 'application/json'});
+                    const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+                    downloadBlob(`backup-${ts}.json`, blob);
+                    status.textContent = 'Backup prepared and downloaded.';
+                } catch (err) {
+                    console.error('Failed to prepare backup', err);
+                    status.textContent = 'Error preparing backup. See console.';
+                }
+            });
+        }
+        if (exportSection) exportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Backup & Restore link: show inline panel that uses the same JSON backup and allows a restore upload (restore endpoint may be server-side only)
+    bindOnce(document.getElementById('backupRestoreLink'), 'click', async (e) => {
+        e.preventDefault();
+        console.debug('Backup & Restore click');
+        let brSection = document.getElementById('backupRestoreSection');
+        const recent = document.getElementById('recentEngagements');
+        const main = document.querySelector('.admin-main') || document.getElementById('dashboard') || document.body;
+        if (!brSection) {
+            const container = document.createElement('div');
+            container.innerHTML = `
+                <div class="table-section" id="backupRestoreSection">
+                    <div class="section-header">
+                        <h3>Backup & Restore</h3>
+                        <div class="section-actions">
+                            <button id="createBackupBtn" class="btn btn-primary">Create JSON Backup</button>
+                            <label class="btn btn-outline" style="display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input id="restoreFileInput" type="file" accept="application/json" style="display:none"> Restore From JSON
+                            </label>
+                        </div>
+                    </div>
+                    <div id="backupRestoreStatus" style="color:var(--gray);">Create a JSON backup or upload a previously exported JSON to restore. Restores may require server-side support.</div>
+                </div>`;
+            if (recent && recent.parentNode) recent.parentNode.insertBefore(container.firstElementChild, recent.nextSibling);
+            else main.appendChild(container.firstElementChild);
+            brSection = document.getElementById('backupRestoreSection');
+            bindOnce(document.getElementById('createBackupBtn'), 'click', async () => {
+                document.getElementById('backupRestoreStatus').textContent = 'Preparing backup...';
+                try {
+                    const [engRes, profRes] = await Promise.all([
+                        apiFetch('/api/admin/engagements?limit=10000'),
+                        apiFetch('/api/admin/profiles?limit=10000')
+                    ]);
+                    if (!engRes.ok || !profRes.ok) {
+                        document.getElementById('backupRestoreStatus').textContent = 'Failed to fetch backup data.';
+                        return;
+                    }
+                    const engagements = await engRes.json();
+                    const profiles = await profRes.json();
+                    const blob = new Blob([JSON.stringify({profiles, engagements}, null, 2)], {type: 'application/json'});
+                    const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+                    downloadBlob(`backup-${ts}.json`, blob);
+                    document.getElementById('backupRestoreStatus').textContent = 'Backup downloaded.';
+                } catch (err) {
+                    console.error('Backup creation failed', err);
+                    document.getElementById('backupRestoreStatus').textContent = 'Error creating backup; see console.';
+                }
+            });
+            const fileInput = document.getElementById('restoreFileInput');
+            if (fileInput) {
+                bindOnce(fileInput, 'change', async (ev) => {
+                    const f = ev.target.files && ev.target.files[0];
+                    if (!f) return;
+                    document.getElementById('backupRestoreStatus').textContent = 'Preparing restore...';
+                    try {
+                        const text = await f.text();
+                        const parsed = JSON.parse(text);
+                        // Attempt to POST to server restore endpoint if available
+                        const res = await apiFetch('/api/admin/restore', {method: 'POST', body: JSON.stringify(parsed), headers: {'Content-Type':'application/json'}}).catch(()=>null);
+                        if (res && res.ok) {
+                            document.getElementById('backupRestoreStatus').textContent = 'Restore completed successfully.';
+                        } else {
+                            document.getElementById('backupRestoreStatus').textContent = 'Restore endpoint not available or failed. Parsed file client-side; server-side restore not executed.';
+                            console.warn('Restore response', res);
+                        }
+                    } catch (err) {
+                        console.error('Restore failed', err);
+                        document.getElementById('backupRestoreStatus').textContent = 'Failed to process restore file; see console.';
+                    }
+                });
+            }
+        }
+        if (brSection) brSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
     // Also wire the header export/profile buttons if they exist (idempotent)
     bindOnce(document.getElementById('exportProfilesBtnHeader'), 'click', () => { window.location = '/api/admin/export_profiles'; });
-});
+}
+
+// If DOM is already ready, attach immediately; otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachNavHandlers);
+} else {
+    attachNavHandlers();
+}
 
 // Wire export button in the header if present
 document.getElementById('exportProfilesBtnHeader')?.addEventListener('click', () => {

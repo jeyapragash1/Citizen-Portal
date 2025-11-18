@@ -19,6 +19,7 @@ async function loadExistingServices() {
     const res = await fetch('/api/admin/services');
     const services = await res.json();
     const listEl = document.getElementById('existing-services-list');
+    if (!listEl) return; // nothing to do when embedded container isn't present
     listEl.innerHTML = '';
 
     if (services.length === 0) {
@@ -132,4 +133,9 @@ document.getElementById('upsert-service-form').onsubmit = async (e) => {
     }
 };
 
-window.onload = loadExistingServices;
+// Auto-run loadExistingServices only if the service list container exists
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ if (document.getElementById('existing-services-list')) loadExistingServices(); });
+} else {
+    if (document.getElementById('existing-services-list')) loadExistingServices();
+}
