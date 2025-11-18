@@ -1,8 +1,9 @@
-.env
-__pycache__/
-/.venv
+﻿venv/
+.venv/
 *.pyc
+__pycache__/
+env/
+.env
+.idea/
+.vscode/
 .DS_Store
-node_modules/
-data/*.npy
-data/faiss*.index
