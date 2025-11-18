@@ -1,0 +1,18 @@
+# Optional ML/vector search dependencies
+# Install these only if you intend to build embeddings/FAISS locally.
+
+sentence-transformers==2.2.2
+huggingface-hub==0.11.0
+# Transformers and tokenizers are pulled in; on Windows prefer conda-forge to avoid building Rust.
+# If you use pip on Windows you may need to install a Rust toolchain or choose wheels.
+# For FAISS (CPU) prefer installing via conda-forge: `conda install -c conda-forge faiss-cpu`
+
+# If you want FAISS on CPU via pip (may not have prebuilt wheels for Windows):
+# faiss-cpu==1.12.0
+
+# Optional heavy ML runtime (PyTorch). If you have a GPU pick the appropriate wheel from PyTorch website.
+# On Windows, installing via conda is generally easier:
+# conda install -c pytorch pytorch torchvision cpuonly -y
+
+# Note: tokenizers may require Rust to build from source. To avoid building from source on Windows,
+# either use a conda environment with prebuilt wheels or install the Rust toolchain (rustup).

@@ -1559,7 +1559,15 @@ def serialize_doc(doc):
     if isinstance(doc, list):
         return [serialize_doc(d) for d in doc]
     out = {}
+    # keys that should never be exposed via API (redact)
+    sensitive_keys = {"password", "passwd", "pwd", "secret", "token", "api_key", "apikey", "password_hash"}
     for k, v in doc.items():
+        kl = k.lower() if isinstance(k, str) else k
+        # redact known sensitive keys
+        if isinstance(kl, str) and kl in sensitive_keys:
+            out[k] = "<redacted>"
+            continue
+
         if isinstance(v, ObjectId):
             out[k] = str(v)
         elif isinstance(v, datetime):
@@ -1567,7 +1575,22 @@ def serialize_doc(doc):
         elif isinstance(v, dict):
             out[k] = serialize_doc(v)
         elif isinstance(v, list):
-            out[k] = [serialize_doc(i) if isinstance(i, (dict, list)) else i for i in v]
+            out_list = []
+            for i in v:
+                if isinstance(i, (dict, list)):
+                    out_list.append(serialize_doc(i))
+                elif isinstance(i, ObjectId):
+                    out_list.append(str(i))
+                else:
+                    out_list.append(i)
+            out[k] = out_list
+        elif isinstance(v, (bytes, bytearray)):
+            # Avoid exposing byte blobs (e.g., hashed passwords). Try to decode, otherwise base64-encode.
+            try:
+                out[k] = v.decode("utf-8")
+            except Exception:
+                import base64
+                out[k] = base64.b64encode(bytes(v)).decode("ascii")
         else:
             out[k] = v
     return out
