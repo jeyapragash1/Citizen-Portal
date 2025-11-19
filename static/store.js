@@ -109,9 +109,9 @@ function displayProducts(products) {
     container.innerHTML = products.map(product => `
         <div class="product-card" onclick='openProductModal(${JSON.stringify(product.id)})'>
             <div class="product-image">
-                <img src="${product.images && product.images[0] ? product.images[0] : getExternalImageById(product.id, 0)}"  
+                 <img src="${(product.images && product.images[0] && String(product.images[0]).startsWith('http')) ? product.images[0] : getExternalImageById(product.id, 0)}"  
                      alt="${(product.name || '').replace(/"/g, '&quot;')}"  
-                     onerror="this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)">
+                     onerror='this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)'>
                 ${product.original_price ? `<div class="discount-badge">-${Math.round((1 - product.price/product.original_price) * 100)}%</div>` : ''}
             </div>
             <div class="product-info">
@@ -138,7 +138,28 @@ function addToCart(productId, evt) {
     // If called from an onclick, stop propagation so the card click doesn't open the modal.
     try { if (evt && typeof evt.stopPropagation === 'function') evt.stopPropagation(); } catch (e) {}
 
-    const product = currentProducts.find(p => String(p.id) === String(productId));
+    let product = currentProducts.find(p => String(p.id) === String(productId));
+    if (!product) {
+        // Fallback: try to infer product details from the DOM (useful if products not loaded yet)
+        try {
+            if (evt && evt.target) {
+                const card = evt.target.closest('.product-card') || document.querySelector('.product-modal-content');
+                if (card) {
+                    const nameEl = card.querySelector('.product-name') || card.querySelector('h2');
+                    const priceEl = card.querySelector('.current-price');
+                    const imgEl = card.querySelector('img');
+                    const inferredName = nameEl ? nameEl.textContent.trim() : `Product ${productId}`;
+                    let inferredPrice = 0;
+                    if (priceEl) {
+                        inferredPrice = parseFloat(priceEl.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+                    }
+                    product = { id: productId, name: inferredName, price: inferredPrice, images: [imgEl ? imgEl.src : getExternalImageById(productId,0)] };
+                }
+            }
+        } catch (e) {
+            console.warn('Could not infer product details from DOM', e);
+        }
+    }
     if (!product) return;
      
     const existingItem = cart.find(item => String(item.id) === String(productId));
@@ -149,6 +170,9 @@ function addToCart(productId, evt) {
             id: productId,
             name: product.name,
             price: product.price,
+            // persist available stripe price id on the cart item so checkout can work even
+            // when `currentProducts` is not populated (e.g., page reload)
+            stripe_price_id: product.stripe_price_id || product.price_id || product.priceId || product.stripePriceId || null,
             image: (product.images && product.images[0]) ? product.images[0] : getExternalImageById(product.id, 0),
             quantity: 1
         });
@@ -190,16 +214,16 @@ function updateCartModal() {
      
     container.innerHTML = cart.map(item => `
         <div class="cart-item">
-            <img src="${item.image || getExternalImageById(item.id,0)}" alt="${(item.name||'').replace(/"/g,'&quot;')}" onerror="this.onerror=null; setFallbackImage(this, ${JSON.stringify(item.id)}, 0)">
+            <img src="${(item.image && String(item.image).startsWith('http')) ? item.image : getExternalImageById(item.id,0)}" alt="${(item.name||'').replace(/"/g,'&quot;')}" onerror='this.onerror=null; setFallbackImage(this, ${JSON.stringify(item.id)}, 0)'>
             <div class="cart-item-info">
                 <h4>${item.name}</h4>
                 <div class="cart-item-price">LKR ${item.price.toLocaleString()}</div>
             </div>
             <div class="cart-item-controls">
-                <button onclick="updateQuantity(${JSON.stringify(item.id)}, -1)">-</button>
+                <button onclick='updateQuantity(${JSON.stringify(item.id)}, -1)'>-</button>
                 <span>${item.quantity}</span>
-                <button onclick="updateQuantity(${JSON.stringify(item.id)}, 1)">+</button>
-                <button onclick="removeFromCart(${JSON.stringify(item.id)})">Remove</button>
+                <button onclick='updateQuantity(${JSON.stringify(item.id)}, 1)'>+</button>
+                <button onclick='removeFromCart(${JSON.stringify(item.id)})'>Remove</button>
             </div>
         </div>
     `).join('');
@@ -236,10 +260,10 @@ async function openProductModal(productId) {
     content.innerHTML = `
         <div class="product-modal-content">
             <div class="product-modal-images">
-                <img src="${product.images && product.images[0] ? product.images[0] : getExternalImageById(product.id, 0)}" alt="${(product.name||'').replace(/"/g, '&quot;')}" class="main-image" onerror="this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)">
+                <img src="${(product.images && product.images[0] && String(product.images[0]).startsWith('http')) ? product.images[0] : getExternalImageById(product.id, 0)}" alt="${(product.name||'').replace(/"/g, '&quot;')}" class="main-image" onerror='this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)'>
                 <div class="image-thumbnails">
                     ${ (product.images && product.images.length ? product.images : [getExternalImageById(product.id,0)]).map(img =>  
-                        `<img src="${img}" alt="Thumbnail" onclick="changeMainImage(this.src)" onerror="this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)">`
+                        `<img src="${img}" alt="Thumbnail" onclick="changeMainImage(this.src)" onerror='this.onerror=null; setFallbackImage(this, ${JSON.stringify(product.id)}, 0)'>`
                     ).join('')}
                 </div>
             </div>
@@ -297,6 +321,7 @@ async function buyNow(productId) {
             const res = await fetch('/api/store/create_checkout_session', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
                 body: JSON.stringify({price_id: priceId, quantity: 1})
             });
             const data = await res.json();
@@ -399,12 +424,23 @@ async function checkout() {
         if (!ok) return; // user cancelled or profile not created
     }
 
+    // Ensure we have the latest products loaded so we can resolve price ids from them.
+    if (!currentProducts || currentProducts.length === 0) {
+        try {
+            await loadProducts();
+        } catch (e) {
+            console.debug('Could not load products before checkout', e);
+        }
+    }
+
     // Build Stripe line_items from cart if products have Stripe price ids
     const lineItems = [];
     let allHavePriceId = true;
     for (const item of cart) {
         const prod = currentProducts.find(p => String(p.id) === String(item.id));
-        const priceId = prod && (prod.stripe_price_id || prod.price_id || prod.priceId || prod.stripePriceId);
+        // Prefer a price id stored on the cart item (persisted at add time),
+        // otherwise fall back to product object if available.
+        const priceId = item.stripe_price_id || item.price_id || (prod && (prod.stripe_price_id || prod.price_id || prod.priceId || prod.stripePriceId));
         if (priceId) {
             lineItems.push({price: priceId, quantity: item.quantity});
         } else {
@@ -418,6 +454,7 @@ async function checkout() {
             const res = await fetch('/api/store/create_checkout_session', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
                 body: JSON.stringify({line_items: lineItems})
             });
             const data = await res.json();
@@ -431,6 +468,35 @@ async function checkout() {
         } catch (err) {
             console.error('Error creating checkout session', err);
             showNotification('Checkout failed. Proceeding with fallback.');
+        }
+    }
+    // If some items have Stripe price IDs but not all, offer to pay for the eligible items now
+    if (lineItems.length > 0 && !allHavePriceId) {
+        const proceed = confirm(`Some items in your cart cannot be paid via Stripe. Pay for ${lineItems.length} item(s) now and keep the rest in your cart?`);
+        if (proceed) {
+            try {
+                const res = await fetch('/api/store/create_checkout_session', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'same-origin',
+                    body: JSON.stringify({line_items: lineItems})
+                });
+                const data = await res.json();
+                if (data && data.url) {
+                    // Remove paid items from cart before redirecting
+                    const paidPriceSet = new Set(lineItems.map(li => li.price));
+                    cart = cart.filter(item => !(item.stripe_price_id && paidPriceSet.has(item.stripe_price_id)));
+                    updateCart();
+                    window.location.href = data.url;
+                    return;
+                } else {
+                    console.error('Stripe session not created for partial cart', data);
+                    showNotification('Could not create checkout session for eligible items. Proceeding with fallback.');
+                }
+            } catch (err) {
+                console.error('Error creating partial checkout session', err);
+                showNotification('Checkout failed. Proceeding with fallback.');
+            }
         }
     }
 
@@ -541,6 +607,80 @@ async function showStoreProfilePrompt() {
                 const j = await res.json();
                 if (j && j.profile_id) {
                     window.profile_id = j.profile_id;
+                    // Ensure server-side session is established for this profile (login) so protected endpoints allow checkout
+                    try {
+                        // Call dev login helper with profile_id to set session cookie
+                        const loginRes = await fetch('/api/user/login', {
+                            method: 'POST', headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({profile_id: j.profile_id})
+                        });
+                        const loginJson = await loginRes.json().catch(() => ({}));
+                        if (loginJson && loginJson.status === 'ok') {
+                            // Now attempt auto-checkout if cart items have Stripe price IDs
+                            if (cart && cart.length > 0) {
+                                // Ensure products are loaded so we can resolve price ids
+                                if (!currentProducts || currentProducts.length === 0) {
+                                    try { await loadProducts(); } catch (e) { console.debug('Could not load products for auto-checkout', e); }
+                                }
+                                const lineItems = [];
+                                let allHavePriceId = true;
+                                for (const item of cart) {
+                                    const prod = currentProducts.find(p => String(p.id) === String(item.id));
+                                    const priceId = item.stripe_price_id || item.price_id || (prod && (prod.stripe_price_id || prod.price_id || prod.priceId || prod.stripePriceId));
+                                    if (priceId) {
+                                        lineItems.push({price: priceId, quantity: item.quantity});
+                                    } else {
+                                        allHavePriceId = false;
+                                    }
+                                }
+                                if (lineItems.length > 0 && allHavePriceId) {
+                                    const sres = await fetch('/api/store/create_checkout_session', {
+                                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                                        credentials: 'same-origin',
+                                        body: JSON.stringify({line_items: lineItems})
+                                    });
+                                    const sdata = await sres.json().catch(() => ({}));
+                                    if (sdata && sdata.url) {
+                                        // Redirect to Stripe Checkout
+                                        window.location.href = sdata.url;
+                                        return; // navigation will occur
+                                    } else {
+                                        console.debug('Stripe session not returned or missing url:', sdata);
+                                    }
+                                }
+                                // If some items eligible but not all, offer partial checkout
+                                if (lineItems.length > 0 && !allHavePriceId) {
+                                    const proceed = confirm(`Some items in your cart cannot be paid via Stripe. Pay for ${lineItems.length} item(s) now and keep the rest in your cart?`);
+                                    if (proceed) {
+                                        try {
+                                            const sres2 = await fetch('/api/store/create_checkout_session', {
+                                                method: 'POST', headers: {'Content-Type': 'application/json'},
+                                                credentials: 'same-origin',
+                                                body: JSON.stringify({line_items: lineItems})
+                                            });
+                                            const sdata2 = await sres2.json().catch(() => ({}));
+                                            if (sdata2 && sdata2.url) {
+                                                // Remove paid items from cart before redirecting
+                                                const paidPriceSet = new Set(lineItems.map(li => li.price));
+                                                cart = cart.filter(item => !(item.stripe_price_id && paidPriceSet.has(item.stripe_price_id)));
+                                                updateCart();
+                                                window.location.href = sdata2.url;
+                                                return;
+                                            }
+                                        } catch (e) {
+                                            console.debug('Partial auto-checkout failed', e);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            console.debug('Auto-login failed after profile creation', loginJson);
+                        }
+                    } catch (err) {
+                        console.error('Auto-login/auto-checkout after profile creation failed:', err);
+                    }
+
+                    // Close overlay and resolve so callers (like checkout()) can continue fallback flow
                     overlay.style.display = 'none';
                     submitBtn.removeEventListener('click', onSubmit);
                     cancelBtn.removeEventListener('click', onCancel);

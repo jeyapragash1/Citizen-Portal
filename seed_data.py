@@ -508,6 +508,17 @@ products = [
     }
 ]
 
+# If a demo Stripe price id is configured via env, attach it to a demo product
+try:
+    demo_price = os.getenv('STRIPE_PRICE_PREMIUM_MONTHLY')
+    if demo_price:
+        for p in products:
+            if p.get('id') == 'prod_degree_01':
+                p['stripe_price_id'] = demo_price
+                break
+except Exception:
+    pass
+
 if products:
     products_col.insert_many(products)
     print("Seeded products:", products_col.count_documents({}))

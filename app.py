@@ -20,6 +20,7 @@ import re # New: For regex matching in autosuggest if needed, but primarily Mong
 import secrets
 import smtplib
 from email.message import EmailMessage
+import traceback
 try:
     from flask_limiter import Limiter
     from flask_limiter.util import get_remote_address
@@ -789,7 +790,8 @@ def create_checkout_session():
     success_url = payload.get("success_url") or (request.host_url.rstrip('/') + '/store?checkout=success')
     cancel_url = payload.get("cancel_url") or (request.host_url.rstrip('/') + '/store?checkout=cancel')
 
-    stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+    # Support both STRIPE_SECRET_KEY (preferred) and legacy STRIPE_SECRET env var
+    stripe_secret = os.getenv("STRIPE_SECRET_KEY") or os.getenv("STRIPE_SECRET")
     if not stripe_secret:
         return jsonify({"error":"stripe_not_configured", "message":"Set STRIPE_SECRET_KEY in environment"}), 500
 
@@ -800,10 +802,38 @@ def create_checkout_session():
         stripe.api_key = stripe_secret
 
         if line_items and isinstance(line_items, list):
-            # Expect items like [{'price': 'price_xxx', 'quantity': 1}, ...]
+            # validate line_items shape early for clearer errors
+            for idx, it in enumerate(line_items):
+                if not isinstance(it, dict) or ('price' not in it and 'price_id' not in it):
+                    return jsonify({"error": "invalid_line_items", "message": f"line_items[{idx}] must be an object with a 'price' field"}), 400
+                # normalize: allow 'price_id' key from clients
+                if 'price_id' in it and 'price' not in it:
+                    it['price'] = it.pop('price_id')
+
+            # Determine whether any provided price is recurring (requires subscription mode)
+            use_subscription_mode = False
+            try:
+                for it in line_items:
+                    price_ref = it.get('price')
+                    if not price_ref:
+                        continue
+                    try:
+                        price_obj = stripe.Price.retrieve(price_ref)
+                        # Stripe returns 'recurring' field for subscription prices
+                        if getattr(price_obj, 'recurring', None):
+                            use_subscription_mode = True
+                            break
+                    except Exception:
+                        # If retrieving a price fails, don't block; assume non-recurring
+                        continue
+            except Exception:
+                # ignore any unexpected inspection errors and default to payment mode
+                use_subscription_mode = False
+
+            chosen_mode = 'subscription' if use_subscription_mode else 'payment'
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
-                mode='payment',
+                mode=chosen_mode,
                 line_items=line_items,
                 success_url=success_url,
                 cancel_url=cancel_url,
@@ -811,9 +841,19 @@ def create_checkout_session():
         else:
             if not price_id:
                 return jsonify({"error":"price_id required"}), 400
+            # Inspect the single price to decide between 'payment' and 'subscription' mode
+            chosen_mode = 'payment'
+            try:
+                p = stripe.Price.retrieve(price_id)
+                if getattr(p, 'recurring', None):
+                    chosen_mode = 'subscription'
+            except Exception:
+                # If inspection fails, default to 'payment' and let Stripe return a clear error
+                chosen_mode = 'payment'
+
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
-                mode='payment',
+                mode=chosen_mode,
                 line_items=[{'price': price_id, 'quantity': quantity}],
                 success_url=success_url,
                 cancel_url=cancel_url,
@@ -828,10 +868,16 @@ def create_checkout_session():
                 url = None
 
         return jsonify({"status":"ok", "url": url, "session_id": getattr(session, 'id', None)})
+    except ModuleNotFoundError as e:
+        # Stripe python package missing
+        err = str(e)
+        logging.exception("Stripe library missing: %s", err)
+        return jsonify({"error":"stripe_library_missing", "detail": err, "traceback": traceback.format_exc()}), 500
     except Exception as e:
         err = str(e)
         logging.exception("Stripe checkout session error: %s", err)
-        return jsonify({"error":"stripe_error", "detail": err}), 500
+        # Include traceback in response for easier local debugging (development-only)
+        return jsonify({"error":"stripe_error", "detail": err, "traceback": traceback.format_exc()}), 500
 
 # --- Consent & Data Export/Delete ---
 @app.route("/api/consent/update", methods=["POST"])
@@ -1979,6 +2025,43 @@ def admin_get_vector_meta():
         return jsonify({'meta': m})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+    # --- Development helper: quick Stripe connectivity/session test ---
+    @app.route('/api/_debug/stripe_test')
+    def debug_stripe_test():
+        """Development-only endpoint: attempt to create a Checkout Session for the
+        demo price id `STRIPE_PRICE_PREMIUM_MONTHLY`. Returns session url or error
+        with traceback to help local debugging. Remove or protect in production."""
+        demo_price = os.getenv('STRIPE_PRICE_PREMIUM_MONTHLY')
+        stripe_secret = os.getenv("STRIPE_SECRET_KEY") or os.getenv("STRIPE_SECRET")
+        if not stripe_secret:
+            return jsonify({"error": "stripe_not_configured"}), 500
+        if not demo_price:
+            return jsonify({"error": "no_demo_price_configured", "message": "Set STRIPE_PRICE_PREMIUM_MONTHLY in .env"}), 400
+        try:
+            import stripe
+            stripe.api_key = stripe_secret
+            # Inspect price to decide mode
+            try:
+                p = stripe.Price.retrieve(demo_price)
+                mode = 'subscription' if getattr(p, 'recurring', None) else 'payment'
+            except Exception:
+                mode = 'payment'
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                mode=mode,
+                line_items=[{'price': demo_price, 'quantity': 1}],
+                success_url=(os.getenv('STRIPE_SUCCESS_URL') or request.host_url.rstrip('/') + '/store?checkout=success'),
+                cancel_url=(os.getenv('STRIPE_CANCEL_URL') or request.host_url.rstrip('/') + '/store?checkout=cancel')
+            )
+            url = getattr(session, 'url', None) or (session.get('url') if isinstance(session, dict) else None)
+            return jsonify({'status': 'ok', 'mode': mode, 'url': url, 'session_id': getattr(session, 'id', None)})
+        except ModuleNotFoundError as e:
+            return jsonify({'error': 'stripe_library_missing', 'detail': str(e), 'traceback': traceback.format_exc()}), 500
+        except Exception as e:
+            return jsonify({'error': 'stripe_error', 'detail': str(e), 'traceback': traceback.format_exc()}), 500
 
 
 # --- Admin auth with bcrypt ---
