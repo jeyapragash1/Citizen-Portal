@@ -267,7 +267,13 @@ def ministry_services(ministry_id):
         if ministry:
             break
     if not ministry:
-        return "Ministry not found", 404
+        # If not found, show a friendly list of available ministries to help navigation
+        ministries = []
+        for sc in super_categories:
+            for m in sc.get("ministries", []):
+                ministries.append({"id": m.get("id"), "name": getLocalizedName(m.get("name")), "super_category": getLocalizedName(sc.get("name"))})
+        return render_template("ministry_list.html", ministries=ministries, query_id=ministry_id)
+
     return render_template("ministry_services.html", ministry=ministry)
 
 @app.route("/admin")
@@ -313,6 +319,49 @@ def admin_officers_page():
 def admin_ads_page():
     """Render the admin ads management page."""
     return render_template("manage_ads.html")
+
+
+# Convenience redirect routes for admin in-page sections so links work as standalone URLs
+@app.route("/admin/navigation")
+@admin_required
+def admin_navigation_redirect():
+    return redirect('/admin')
+
+
+@app.route("/admin/users")
+@admin_required
+def admin_users_redirect():
+    return redirect('/admin#userManagement')
+
+
+@app.route("/admin/services")
+@admin_required
+def admin_services_redirect():
+    return redirect('/admin#services')
+
+
+@app.route("/admin/ai-index")
+@admin_required
+def admin_ai_index_redirect():
+    return redirect('/admin#ai-search-index')
+
+
+@app.route("/admin/reports")
+@admin_required
+def admin_reports_redirect():
+    return redirect('/admin#reports')
+
+
+@app.route("/admin/export")
+@admin_required
+def admin_export_redirect():
+    return redirect('/admin#exportData')
+
+
+@app.route("/admin/backup-restore")
+@admin_required
+def admin_backup_redirect():
+    return redirect('/admin#backupRestore')
 
 
 # --- API: services & categories (public) ---
@@ -723,6 +772,66 @@ def process_payment():
 
     return jsonify({"status":"ok", "payment_id": payment["payment_id"]})
 
+@app.route("/api/store/create_checkout_session", methods=["POST"])
+@user_or_admin_required
+def create_checkout_session():
+    """Create a Stripe Checkout Session for a given Stripe Price ID.
+    Expects JSON: {"price_id": "price_xxx", "quantity": 1, "success_url": "...", "cancel_url": "..."}
+    STRIPE_SECRET_KEY must be set in environment. Returns JSON {url: <checkout_url>} on success.
+    """
+    payload = request.json or {}
+    price_id = payload.get("price_id")
+    try:
+        quantity = int(payload.get("quantity", 1))
+    except Exception:
+        quantity = 1
+
+    success_url = payload.get("success_url") or (request.host_url.rstrip('/') + '/store?checkout=success')
+    cancel_url = payload.get("cancel_url") or (request.host_url.rstrip('/') + '/store?checkout=cancel')
+
+    stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+    if not stripe_secret:
+        return jsonify({"error":"stripe_not_configured", "message":"Set STRIPE_SECRET_KEY in environment"}), 500
+
+    # Support either a single price_id (legacy) or an array of line_items for cart checkout
+    line_items = payload.get('line_items')
+    try:
+        import stripe
+        stripe.api_key = stripe_secret
+
+        if line_items and isinstance(line_items, list):
+            # Expect items like [{'price': 'price_xxx', 'quantity': 1}, ...]
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=line_items,
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+        else:
+            if not price_id:
+                return jsonify({"error":"price_id required"}), 400
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                mode='payment',
+                line_items=[{'price': price_id, 'quantity': quantity}],
+                success_url=success_url,
+                cancel_url=cancel_url,
+            )
+
+        # Newer stripe library exposes session.url
+        url = getattr(session, 'url', None) or (session.get('url') if isinstance(session, dict) else None)
+        if not url:
+            try:
+                url = session['url']
+            except Exception:
+                url = None
+
+        return jsonify({"status":"ok", "url": url, "session_id": getattr(session, 'id', None)})
+    except Exception as e:
+        err = str(e)
+        logging.exception("Stripe checkout session error: %s", err)
+        return jsonify({"error":"stripe_error", "detail": err}), 500
 
 # --- Consent & Data Export/Delete ---
 @app.route("/api/consent/update", methods=["POST"])

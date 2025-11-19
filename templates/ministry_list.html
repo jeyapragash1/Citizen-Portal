@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministry Not Found</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container" style="padding:24px;">
+        <h1>Ministry Not Found</h1>
+        <p>The ministry ID you requested (<strong>{{ query_id }}</strong>) was not found. Below is a list of available ministries — click any to view its services.</p>
+        <ul style="list-style:none;padding:0;">
+            {% for m in ministries %}
+                <li style="margin:10px 0;padding:12px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06);">
+                    <a href="/ministry/{{ m.id }}" style="text-decoration:none;color:#0b1220;font-weight:600;">{{ m.name }}</a>
+                    <div style="color:#6b7280;font-size:0.95rem;">Category: {{ m.super_category }}</div>
+                </li>
+            {% endfor %}
+        </ul>
+        <p style="margin-top:18px;"><a href="/">Back to portal</a></p>
+    </div>
+</body>
+</html>

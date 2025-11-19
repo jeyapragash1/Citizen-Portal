@@ -59,6 +59,50 @@ body{font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:var(--surf
 
 .notification{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:8px}
 
+/* Proceed to Checkout button */
+.proceed-btn {
+	display: inline-block;
+	background: var(--accent);
+	color: #fff;
+	border: none;
+	padding: 12px 18px;
+	font-size: 15px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 700;
+	box-shadow: 0 6px 18px rgba(19,99,223,0.18);
+}
+.proceed-btn:hover { background: #0e57c7 }
+
+/* Simple profile prompt overlay used when user is not identified */
+#store-profile-overlay {
+	position: fixed;
+	left: 0; right: 0; top: 0; bottom: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.45);
+	z-index: 1300;
+}
+#store-profile-overlay .panel {
+	width: 92%;
+	max-width: 420px;
+	background: #fff;
+	padding: 18px;
+	border-radius: 10px;
+	box-shadow: 0 8px 40px rgba(2,6,23,0.24);
+}
+#store-profile-overlay h3 { margin: 0 0 10px 0 }
+#store-profile-overlay input[type="text"], #store-profile-overlay input[type="email"], #store-profile-overlay input[type="number"] {
+	width: 100%;
+	padding: 8px 10px;
+	margin-bottom: 8px;
+	border: 1px solid #e6eef7;
+	border-radius: 6px;
+}
+#store-profile-overlay .actions { text-align: right; margin-top: 8px }
+#store-profile-overlay .actions button { margin-left: 8px; padding: 8px 12px; border-radius:6px }
+
 /* Responsive */
 @media (max-width:1000px){
 	.products-container{grid-template-columns:repeat(2,1fr)}

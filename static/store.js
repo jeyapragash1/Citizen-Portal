@@ -107,7 +107,7 @@ function displayProducts(products) {
     }
      
     container.innerHTML = products.map(product => `
-        <div class="product-card" onclick="openProductModal(${JSON.stringify(product.id)})">
+        <div class="product-card" onclick='openProductModal(${JSON.stringify(product.id)})'>
             <div class="product-image">
                 <img src="${product.images && product.images[0] ? product.images[0] : getExternalImageById(product.id, 0)}"  
                      alt="${(product.name || '').replace(/"/g, '&quot;')}"  
@@ -125,7 +125,7 @@ function displayProducts(products) {
                     ${'★'.repeat(Math.floor(product.rating || 0))}${'☆'.repeat(5-Math.floor(product.rating || 0))}
                     <span class="rating-count">(${product.reviews_count || 0})</span>
                 </div>
-                <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product.id)})">
+                <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product.id)}, event)'>
                     Add to Cart
                 </button>
             </div>
@@ -134,11 +134,14 @@ function displayProducts(products) {
 }
 
 // Cart management
-function addToCart(productId) {
-    const product = currentProducts.find(p => p.id === productId);
+function addToCart(productId, evt) {
+    // If called from an onclick, stop propagation so the card click doesn't open the modal.
+    try { if (evt && typeof evt.stopPropagation === 'function') evt.stopPropagation(); } catch (e) {}
+
+    const product = currentProducts.find(p => String(p.id) === String(productId));
     if (!product) return;
      
-    const existingItem = cart.find(item => item.id === productId);
+    const existingItem = cart.find(item => String(item.id) === String(productId));
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
@@ -193,10 +196,10 @@ function updateCartModal() {
                 <div class="cart-item-price">LKR ${item.price.toLocaleString()}</div>
             </div>
             <div class="cart-item-controls">
-                <button onclick="updateQuantity('${item.id}', -1)">-</button>
+                <button onclick="updateQuantity(${JSON.stringify(item.id)}, -1)">-</button>
                 <span>${item.quantity}</span>
-                <button onclick="updateQuantity('${item.id}', 1)">+</button>
-                <button onclick="removeFromCart('${item.id}')">Remove</button>
+                <button onclick="updateQuantity(${JSON.stringify(item.id)}, 1)">+</button>
+                <button onclick="removeFromCart(${JSON.stringify(item.id)})">Remove</button>
             </div>
         </div>
     `).join('');
@@ -206,7 +209,7 @@ function updateCartModal() {
 }
 
 function updateQuantity(productId, change) {
-    const item = cart.find(item => item.id === productId);
+    const item = cart.find(item => String(item.id) === String(productId));
     if (item) {
         item.quantity += change;
         if (item.quantity <= 0) {
@@ -218,13 +221,13 @@ function updateQuantity(productId, change) {
 }
 
 function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+    cart = cart.filter(item => String(item.id) !== String(productId));
     updateCart();
 }
 
 // Product modal with enhanced view
 async function openProductModal(productId) {
-    const product = currentProducts.find(p => p.id === productId);
+    const product = currentProducts.find(p => String(p.id) === String(productId));
     if (!product) return;
      
     const modal = document.getElementById('product-modal');
@@ -268,8 +271,8 @@ async function openProductModal(productId) {
                 </div>
                  
                 <div class="product-actions">
-                    <button class="buy-now-btn" onclick="buyNow('${product.id}')">Buy Now</button>
-                    <button class="add-to-cart-large" onclick="addToCart('${product.id}')">Add to Cart</button>
+                    <button class="buy-now-btn" onclick='buyNow(${JSON.stringify(product.id)}, event)'>Buy Now</button>
+                    <button class="add-to-cart-large" onclick='addToCart(${JSON.stringify(product.id)}, event)'>Add to Cart</button>
                 </div>
             </div>
         </div>
@@ -280,6 +283,73 @@ async function openProductModal(productId) {
 
 function changeMainImage(src) {
     document.querySelector('.main-image').src = src;
+}
+
+// Buy Now: prefer Stripe Checkout (server) if product has a Stripe Price ID,
+// otherwise fallback to a development quick-pay flow using existing order/payment endpoints.
+async function buyNow(productId) {
+    const product = currentProducts.find(p => p.id === productId || String(p.id) === String(productId));
+    if (!product) return;
+
+    const priceId = product.stripe_price_id || product.price_id || product.priceId || product.stripePriceId;
+    if (priceId) {
+        try {
+            const res = await fetch('/api/store/create_checkout_session', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({price_id: priceId, quantity: 1})
+            });
+            const data = await res.json();
+            if (data && data.url) {
+                // Redirect user to Stripe Checkout
+                window.location.href = data.url;
+                return;
+            } else {
+                console.error('No checkout URL returned', data);
+                showNotification('Could not create checkout session.');
+            }
+        } catch (err) {
+            console.error('Error creating checkout session', err);
+            showNotification('Checkout failed. Please try again.');
+        }
+    }
+
+    // Fallback dev flow: create an order and mark payment verified (development only)
+    try {
+        const orderData = {
+            user_id: typeof profile_id !== 'undefined' ? profile_id : null,
+            items: [{id: product.id, name: product.name, price: product.price, quantity: 1}],
+            total_amount: product.price,
+            payment_method: 'card'
+        };
+
+        const or = await fetch('/api/store/order', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(orderData)
+        });
+        const orj = await or.json();
+        if (orj && orj.status === 'ok') {
+            const pay = await fetch('/api/store/payment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({order_id: orj.order_id, user_id: orderData.user_id, amount: product.price, method: 'card', items: orderData.items, verified: true})
+            });
+            const payj = await pay.json();
+            if (payj && payj.status === 'ok') {
+                showNotification('Purchase completed (dev mode). Thank you!');
+                // Remove item from cart if present
+                cart = cart.filter(i => String(i.id) !== String(product.id));
+                updateCart();
+                closeModal();
+                return;
+            }
+        }
+        showNotification('Purchase failed.');
+    } catch (err) {
+        console.error('Fallback purchase error', err);
+        showNotification('Purchase failed.');
+    }
 }
 
 function closeModal() {
@@ -320,31 +390,71 @@ const range = document.getElementById('price-range');
     maxPrice.textContent = parseInt(range.value).toLocaleString();
 }
  
-// Checkout process
+// Checkout process: attempt Stripe Checkout for the entire cart when possible,
+// otherwise fall back to the existing order/payment dev flow.
 async function checkout() {
-    if (!profile_id) {
-        showProfileModal();
-        return;
+    // If profile_id isn't available, show a lightweight in-store profile prompt
+    if (typeof profile_id === 'undefined' || !profile_id) {
+        const ok = await showStoreProfilePrompt();
+        if (!ok) return; // user cancelled or profile not created
     }
-     
+
+    // Build Stripe line_items from cart if products have Stripe price ids
+    const lineItems = [];
+    let allHavePriceId = true;
+    for (const item of cart) {
+        const prod = currentProducts.find(p => String(p.id) === String(item.id));
+        const priceId = prod && (prod.stripe_price_id || prod.price_id || prod.priceId || prod.stripePriceId);
+        if (priceId) {
+            lineItems.push({price: priceId, quantity: item.quantity});
+        } else {
+            allHavePriceId = false;
+        }
+    }
+
+    if (lineItems.length > 0 && allHavePriceId) {
+        // Try to create a Checkout session for the cart
+        try {
+            const res = await fetch('/api/store/create_checkout_session', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({line_items: lineItems})
+            });
+            const data = await res.json();
+            if (data && data.url) {
+                window.location.href = data.url;
+                return;
+            } else {
+                console.error('Stripe session not created', data);
+                showNotification('Could not create checkout session. Proceeding with fallback.');
+            }
+        } catch (err) {
+            console.error('Error creating checkout session', err);
+            showNotification('Checkout failed. Proceeding with fallback.');
+        }
+    }
+
+    // Fallback flow: create order and process payment (development mode)
     const orderData = {
         user_id: profile_id,
         items: cart,
         total_amount: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
         payment_method: 'card'
     };
-     
+
     try {
         const res = await fetch('/api/store/order', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(orderData)
         });
-         
+
         const result = await res.json();
         if (result.status === 'ok') {
-            // Process payment 
+            // Process payment (dev fallback will mark verified if requested)
             await processPayment(result.order_id);
+        } else {
+            showNotification('Could not create order.');
         }
     } catch (error) {
         console.error('Checkout error:', error);
@@ -379,6 +489,81 @@ async function processPayment(orderId) {
         console.error('Payment error:', error);
         showNotification('Payment failed. Please try again.');
     }
+}
+
+// Show a simple profile prompt overlay when global profile is not available.
+// Returns true when profile created/available; false if cancelled.
+function ensureStoreProfileElements() {
+    if (document.getElementById('store-profile-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'store-profile-overlay';
+    overlay.innerHTML = `
+        <div class="panel">
+            <h3>Tell us about you</h3>
+            <input id="sp_name" type="text" placeholder="Full name" required>
+            <input id="sp_age" type="number" placeholder="Age" required>
+            <input id="sp_email" type="email" placeholder="Email (optional)">
+            <div class="actions">
+                <button id="sp_cancel">Cancel</button>
+                <button id="sp_submit" class="proceed-btn">Continue</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById('sp_cancel').addEventListener('click', () => { overlay.style.display = 'none'; });
+}
+
+async function showStoreProfilePrompt() {
+    ensureStoreProfileElements();
+    const overlay = document.getElementById('store-profile-overlay');
+    overlay.style.display = 'flex';
+
+    return await new Promise((resolve) => {
+        const submitBtn = document.getElementById('sp_submit');
+        const cancelBtn = document.getElementById('sp_cancel');
+
+        async function onSubmit(e) {
+            e && e.preventDefault();
+            submitBtn.disabled = true;
+            const name = document.getElementById('sp_name').value.trim();
+            const age = document.getElementById('sp_age').value.trim();
+            const email = document.getElementById('sp_email').value.trim();
+            if (!name || !age) {
+                alert('Name and age are required.');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/profile/step', {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({step: 'all', data: {name, age, email, phone: '', job: '', desires: []}})
+                });
+                const j = await res.json();
+                if (j && j.profile_id) {
+                    window.profile_id = j.profile_id;
+                    overlay.style.display = 'none';
+                    submitBtn.removeEventListener('click', onSubmit);
+                    cancelBtn.removeEventListener('click', onCancel);
+                    resolve(true);
+                    return;
+                }
+            } catch (err) {
+                console.error('Failed to create profile:', err);
+            }
+            submitBtn.disabled = false;
+            alert('Failed to create profile. Please try again.');
+        }
+
+        function onCancel() {
+            overlay.style.display = 'none';
+            submitBtn.removeEventListener('click', onSubmit);
+            cancelBtn.removeEventListener('click', onCancel);
+            resolve(false);
+        }
+
+        submitBtn.addEventListener('click', onSubmit);
+        cancelBtn.addEventListener('click', onCancel);
+    });
 }
 
 // Utility functions
